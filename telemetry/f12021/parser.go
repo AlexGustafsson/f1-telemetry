@@ -74,7 +74,5 @@ func ParsePacket(data []byte) (any, error) {
 		return nil, err
 	}
 
-	packet := v.(Packet)
-
-	return packet, nil
+	return v, nil
 }

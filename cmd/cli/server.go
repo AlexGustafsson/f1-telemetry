@@ -1,15 +1,8 @@
 package main
 
 import (
-	"encoding/hex"
-	"encoding/json"
-	"fmt"
-	"os"
-
 	"github.com/AlexGustafsson/f1-telemetry/internal/server"
 	"github.com/AlexGustafsson/f1-telemetry/telemetry"
-	"github.com/AlexGustafsson/f1-telemetry/telemetry/f12021"
-	"github.com/AlexGustafsson/f1-telemetry/telemetry/f1struct"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )
@@ -25,14 +18,22 @@ func ActionServer(ctx *cli.Context) error {
 		address = "0.0.0.0:20777"
 	}
 
+	outputPath := ctx.String("output")
+
 	server, err := server.Listen(address)
 	if err != nil {
 		log.Fatal("Failed to listen for incoming packets", zap.Error(err))
 	}
 	defer server.Close()
 
-	encoder := json.NewEncoder(os.Stdout)
-	encoder.SetIndent("", "  ")
+	timeSeries, err := telemetry.NewTimeSeries(outputPath, log)
+	if err != nil {
+		log.Fatal("Failed to create time series for incoming packets", zap.Error(err))
+	}
+	defer timeSeries.Close()
+
+	packets := make(chan telemetry.Packet, 128)
+	go timeSeries.IngestContinously(packets)
 
 	for {
 		message, ok := <-server.Messages()
@@ -52,26 +53,7 @@ func ActionServer(ctx *cli.Context) error {
 			continue
 		}
 
-		marshaled, err := f1struct.Marshal(packet)
-		if err != nil {
-			log.Error("Failed to marshal packet", zap.Error(err))
-			continue
-		}
-
-		survivedRoundtrip := hex.EncodeToString(message.Data) == hex.EncodeToString(marshaled)
-		if p, ok := packet.(f12021.Packet); ok {
-			fmt.Println(p.Header().PacketID, survivedRoundtrip)
-			if !survivedRoundtrip {
-				fmt.Printf("%d vs %d", len(message.Data), len(marshaled))
-				fmt.Println("Message")
-				fmt.Println(hex.EncodeToString(message.Data))
-				fmt.Println("Marshaled")
-				fmt.Println(hex.EncodeToString(marshaled))
-			}
-		} else {
-			log.Error("Unknown packet type")
-		}
-		// encoder.Encode(packet)
+		packets <- packet
 	}
 
 	return nil

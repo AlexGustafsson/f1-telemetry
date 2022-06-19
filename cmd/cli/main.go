@@ -52,6 +52,13 @@ func main() {
 					Usage:       "address to listen on",
 					DefaultText: ":20777",
 				},
+				&cli.StringFlag{
+					Name:      "output",
+					Aliases:   []string{"o"},
+					Usage:     "path to time series output",
+					Required:  true,
+					TakesFile: true,
+				},
 			},
 		},
 		{
@@ -75,7 +82,7 @@ func main() {
 		},
 		{
 			Name:   "send",
-			Usage:  "sned telemetry from a collected file",
+			Usage:  "send telemetry from a collected file",
 			Action: ActionSend,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
@@ -94,6 +101,20 @@ func main() {
 					Name:        "interval",
 					Usage:       "time between messages",
 					DefaultText: "200ms",
+				},
+			},
+		},
+		{
+			Name:   "graph",
+			Usage:  "graph collected telemetry",
+			Action: ActionGraph,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:      "input",
+					Aliases:   []string{"i"},
+					Usage:     "path to time series input",
+					Required:  true,
+					TakesFile: true,
 				},
 			},
 		},

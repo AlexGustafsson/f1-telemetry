@@ -11,7 +11,7 @@ var parsers = map[uint16]func([]byte) (any, error){
 	2021: f12021.ParsePacket,
 }
 
-func ParsePacket(data []byte) (any, error) {
+func ParsePacket(data []byte) (Packet, error) {
 	packetFormat := binary.LittleEndian.Uint16(data)
 
 	parse, ok := parsers[packetFormat]
@@ -19,5 +19,10 @@ func ParsePacket(data []byte) (any, error) {
 		return nil, fmt.Errorf("unsupported packet format: %d", packetFormat)
 	}
 
-	return parse(data)
+	packet, err := parse(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return packet.(Packet), nil
 }

@@ -39,9 +39,17 @@ const (
 	EventCodeButtonStatus EventCode = "BUTN"
 )
 
+type PacketEvent interface {
+	EventCode() EventCode
+}
+
 type PacketEventHeader struct {
 	PacketHeader `nested:"true"`
 	Code         EventCode `length:"4"`
+}
+
+func (p PacketEventHeader) EventCode() EventCode {
+	return p.Code
 }
 
 type PacketEventFastestLap struct {

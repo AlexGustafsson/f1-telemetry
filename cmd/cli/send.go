@@ -83,7 +83,7 @@ func ActionSend(ctx *cli.Context) error {
 		payload := buffer[:message.Length]
 		socket.Write(payload)
 
-		log.Info("Sent message", zap.Uint32("size", message.Length))
+		log.Debug("Sent message", zap.Uint32("size", message.Length))
 		time.Sleep(interval)
 	}
 }

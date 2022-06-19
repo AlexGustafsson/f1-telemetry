@@ -12,3 +12,19 @@ type PacketHeader struct {
 	PlayerCarIndex          uint8
 	SecondaryPlayerCarIndex uint8
 }
+
+func (p PacketHeader) ID() uint32 {
+	return p.FrameIdentifier
+}
+
+func (p PacketHeader) FormatVersion() uint16 {
+	return p.PacketFormat
+}
+
+func (p PacketHeader) Type() uint8 {
+	return uint8(p.PacketID)
+}
+
+func (p PacketHeader) Session() uint64 {
+	return p.SessionUID
+}
