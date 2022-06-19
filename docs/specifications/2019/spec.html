@@ -1,0 +1,958 @@
+<p>
+  The F1 series of games support the output of certain game data across UDP
+  connections. This data can be used supply race information to external
+  applications, or to drive certain hardware (e.g. motion platforms, force
+  feedback steering wheels and LED devices).
+</p>
+
+<p>
+  The following information summarise this data structures so that developers of
+  supporting hardware or software are able to configure these to work correctly
+  with the F1 game.
+</p>
+
+<p>
+  If you cannot find the information that you require then please contact
+  <a href="mailto:community@codemasters.com" rel=""
+    >community@codemasters.com</a
+  >
+  and a member of the dev team will respond to your query as soon as possible.
+</p>
+
+<h1>Packet Information</h1>
+
+<p>Packet Types</p>
+
+<p>
+  Each packet can now carry different types of data rather than having one
+  packet which contains everything. A header has been added to each packet as
+  well so that versioning can be tracked and it will be easier for applications
+  to check they are interpreting the incoming data in the correct way. Please
+  note that all values are encoded using Little Endian format. All data is
+  packed.
+</p>
+
+<p>The following data types are used in the structures:</p>
+
+<table border="1" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td valign="top" width="139">
+        <p>
+          <b>Type</b>
+        </p>
+      </td>
+      <td valign="top" width="201">
+        <p>
+          <b>Description</b>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="139">
+        <p>
+          <span>uint8</span>
+        </p>
+      </td>
+      <td valign="top" width="201">
+        <p>
+          <span>Unsigned 8-bit integer</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="139">
+        <p>
+          <span>int8</span>
+        </p>
+      </td>
+      <td valign="top" width="201">
+        <p>
+          <span>Signed 8-bit integer</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="139">
+        <p>
+          <span>uint16</span>
+        </p>
+      </td>
+      <td valign="top" width="201">
+        <p>
+          <span>Unsigned 16-bit integer</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="139">
+        <p>
+          <span>int16</span>
+        </p>
+      </td>
+      <td valign="top" width="201">
+        <p>
+          <span>Signed 16-bit integer</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="139">
+        <p>
+          <span>float</span>
+        </p>
+      </td>
+      <td valign="top" width="201">
+        <p>
+          <span>Floating point (32-bit)</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="139">
+        <p>
+          <span>uint64</span>
+        </p>
+      </td>
+      <td valign="top" width="201">
+        <p>
+          <span>Unsigned 64-bit integer</span>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Packet Header</h2>
+
+<p>Each packet has the following header:</p>
+
+<pre style=""><span>struct</span><span> </span><span>PacketHeader</span><span>
+</span><span>{</span><span>
+    </span><span>uint16</span><span>    m_packetFormat</span><span>;</span><span>         </span><span>// 2019</span><span>
+    </span><span>uint8</span><span>     m_gameMajorVersion</span><span>;</span><span>     </span><span>// Game major version - "X.00"</span><span>
+    </span><span>uint8</span><span>     m_gameMinorVersion</span><span>;</span><span>     </span><span>// Game minor version - "1.XX"</span><span>
+    </span><span>uint8</span><span>     m_packetVersion</span><span>;</span><span>        </span><span>// Version of this packet type, all start from 1</span><span>
+    </span><span>uint8</span><span>     m_packetId</span><span>;</span><span>             </span><span>// Identifier for the packet type, see below</span><span>
+    </span><span>uint64</span><span>    m_sessionUID</span><span>;</span><span>           </span><span>// Unique identifier for the session</span><span>
+    </span><span>float</span><span>     m_sessionTime</span><span>;</span><span>          </span><span>// Session timestamp</span><span>
+    </span><span>uint</span><span>      m_frameIdentifier</span><span>;</span><span>      </span><span>// Identifier for the frame the data was retrieved on</span><span>
+    </span><span>uint8</span><span>     m_playerCarIndex</span><span>;</span><span>       </span><span>// Index of player's car in the array</span><span>
+</span><span>};</span></pre>
+
+<h2>Packet IDs</h2>
+
+<p>The packets IDs are as follows:</p>
+
+<table border="1" cellpadding="0" cellspacing="0" width="646">
+  <tbody>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <b>Packet Name</b>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p>
+          <b>Value</b>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <b>Description</b>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Motion</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>0</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span
+            >Contains all motion data for player’s car – only sent while player
+            is in control</span
+          >
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Session</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>1</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span>Data about the session – track, time left</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Lap Data</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>2</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span>Data about all the lap times of cars in the session</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Event</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>3</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span>Various notable events that happen during a session</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Participants</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>4</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span
+            >List of participants in the session, mostly relevant for
+            multiplayer</span
+          >
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Car Setups</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>5</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span>Packet detailing car setups for cars in the race</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Car Telemetry</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>6</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span>Telemetry data for all cars</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="130">
+        <p>
+          <span>Car Status</span>
+        </p>
+      </td>
+      <td valign="top" width="62">
+        <p align="center">
+          <span>7</span>
+        </p>
+      </td>
+      <td valign="top" width="454">
+        <p>
+          <span>Status data for all cars such as damage</span>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Motion Packet</h2>
+
+<p>
+  The motion packet gives physics data for all the cars being driven. There is
+  additional data for the car being driven with the goal of being able to drive
+  a motion platform setup.
+</p>
+
+<p>
+  <i
+    >N.B. For the normalised vectors below, to convert to float values divide by
+    32767.0f – 16-bit signed values are used to pack the data and on the
+    assumption that direction values are always between -1.0f and 1.0f.</i
+  >
+</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: Rate as specified in menus</p>
+
+<p>Size: 1343 bytes</p>
+
+<p>Version: 1</p>
+
+<pre style=""><span>struct</span><span> </span><span>CarMotionData</span><span>
+</span><span>{</span><span>
+    </span><span>float</span><span>         m_worldPositionX</span><span>;</span><span>           </span><span>// World space X position</span><span>
+    </span><span>float</span><span>         m_worldPositionY</span><span>;</span><span>           </span><span>// World space Y position</span><span>
+    </span><span>float</span><span>         m_worldPositionZ</span><span>;</span><span>           </span><span>// World space Z position</span><span>
+    </span><span>float</span><span>         m_worldVelocityX</span><span>;</span><span>           </span><span>// Velocity in world space X</span><span>
+    </span><span>float</span><span>         m_worldVelocityY</span><span>;</span><span>           </span><span>// Velocity in world space Y</span><span>
+    </span><span>float</span><span>         m_worldVelocityZ</span><span>;</span><span>           </span><span>// Velocity in world space Z</span><span>
+    </span><span>int16</span><span>         m_worldForwardDirX</span><span>;</span><span>         </span><span>// World space forward X direction (normalised)</span><span>
+    </span><span>int16</span><span>         m_worldForwardDirY</span><span>;</span><span>         </span><span>// World space forward Y direction (normalised)</span><span>
+    </span><span>int16</span><span>         m_worldForwardDirZ</span><span>;</span><span>         </span><span>// World space forward Z direction (normalised)</span><span>
+    </span><span>int16</span><span>         m_worldRightDirX</span><span>;</span><span>           </span><span>// World space right X direction (normalised)</span><span>
+    </span><span>int16</span><span>         m_worldRightDirY</span><span>;</span><span>           </span><span>// World space right Y direction (normalised)</span><span>
+    </span><span>int16</span><span>         m_worldRightDirZ</span><span>;</span><span>           </span><span>// World space right Z direction (normalised)</span><span>
+    </span><span>float</span><span>         m_gForceLateral</span><span>;</span><span>            </span><span>// Lateral G-Force component</span><span>
+    </span><span>float</span><span>         m_gForceLongitudinal</span><span>;</span><span>       </span><span>// Longitudinal G-Force component</span><span>
+    </span><span>float</span><span>         m_gForceVertical</span><span>;</span><span>           </span><span>// Vertical G-Force component</span><span>
+    </span><span>float</span><span>         m_yaw</span><span>;</span><span>                      </span><span>// Yaw angle in radians</span><span>
+    </span><span>float</span><span>         m_pitch</span><span>;</span><span>                    </span><span>// Pitch angle in radians</span><span>
+    </span><span>float</span><span>         m_roll</span><span>;</span><span>                     </span><span>// Roll angle in radians</span><span>
+</span><span>};</span><span>
+
+</span><span>struct</span><span> </span><span>PacketMotionData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    m_header</span><span>;</span><span>               	</span><span>// Header</span><span>
+
+    </span><span>CarMotionData</span><span>   m_carMotionData</span><span>[</span><span>20</span><span>];</span><span>    	</span><span>// Data for all cars on track</span><span>
+
+    </span><span>// Extra player car ONLY data</span><span>
+    </span><span>float</span><span>         m_suspensionPosition</span><span>[</span><span>4</span><span>];</span><span>       </span><span>// Note: All wheel arrays have the following order:</span><span>
+    </span><span>float</span><span>         m_suspensionVelocity</span><span>[</span><span>4</span><span>];</span><span>       </span><span>// RL, RR, FL, FR</span><span>
+    </span><span>float</span><span>         m_suspensionAcceleration</span><span>[</span><span>4</span><span>];</span><span>	</span><span>// RL, RR, FL, FR</span><span>
+    </span><span>float</span><span>         m_wheelSpeed</span><span>[</span><span>4</span><span>];</span><span>           	</span><span>// Speed of each wheel</span><span>
+    </span><span>float</span><span>         m_wheelSlip</span><span>[</span><span>4</span><span>];</span><span>                </span><span>// Slip ratio for each wheel</span><span>
+    </span><span>float</span><span>         m_localVelocityX</span><span>;</span><span>         	</span><span>// Velocity in local space</span><span>
+    </span><span>float</span><span>         m_localVelocityY</span><span>;</span><span>         	</span><span>// Velocity in local space</span><span>
+    </span><span>float</span><span>         m_localVelocityZ</span><span>;</span><span>         	</span><span>// Velocity in local space</span><span>
+    </span><span>float</span><span>         m_angularVelocityX</span><span>;</span><span>		</span><span>// Angular velocity x-component</span><span>
+    </span><span>float</span><span>         m_angularVelocityY</span><span>;</span><span>            </span><span>// Angular velocity y-component</span><span>
+    </span><span>float</span><span>         m_angularVelocityZ</span><span>;</span><span>            </span><span>// Angular velocity z-component</span><span>
+    </span><span>float</span><span>         m_angularAccelerationX</span><span>;</span><span>        </span><span>// Angular velocity x-component</span><span>
+    </span><span>float</span><span>         m_angularAccelerationY</span><span>;</span><span>	</span><span>// Angular velocity y-component</span><span>
+    </span><span>float</span><span>         m_angularAccelerationZ</span><span>;</span><span>        </span><span>// Angular velocity z-component</span><span>
+    </span><span>float</span><span>         m_frontWheelsAngle</span><span>;</span><span>            </span><span>// Current front wheels angle in radians</span><span>
+</span><span>};</span><span>
+</span></pre>
+
+<h2>Session Packet</h2>
+
+<p>
+  The session packet includes details about the current session in progress.
+</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: 2 per second</p>
+
+<p>Size: 149 bytes</p>
+
+<p>Version: 1</p>
+
+<pre style=""><span>struct</span><span> </span><span>MarshalZone</span><span>
+</span><span>{</span><span>
+    </span><span>float</span><span>  m_zoneStart</span><span>;</span><span>   </span><span>// Fraction (0..1) of way through the lap the marshal zone starts</span><span>
+    </span><span>int8</span><span>   m_zoneFlag</span><span>;</span><span>    </span><span>// -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red</span><span>
+</span><span>};</span><span>
+
+</span><span>struct</span><span> </span><span>PacketSessionData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    m_header</span><span>;</span><span>               	</span><span>// Header</span><span>
+
+    </span><span>uint8</span><span>           m_weather</span><span>;</span><span>              	</span><span>// Weather - 0 = clear, 1 = light cloud, 2 = overcast</span><span>
+                                            	</span><span>// 3 = light rain, 4 = heavy rain, 5 = storm</span><span>
+    </span><span>int8</span><span>	            m_trackTemperature</span><span>;</span><span>    	</span><span>// Track temp. in degrees celsius</span><span>
+    </span><span>int8</span><span>	            m_airTemperature</span><span>;</span><span>      	</span><span>// Air temp. in degrees celsius</span><span>
+    </span><span>uint8</span><span>           m_totalLaps</span><span>;</span><span>           	</span><span>// Total number of laps in this race</span><span>
+    </span><span>uint16</span><span>          m_trackLength</span><span>;</span><span>           	</span><span>// Track length in metres</span><span>
+    </span><span>uint8</span><span>           m_sessionType</span><span>;</span><span>         	</span><span>// 0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P</span><span>
+                                            	</span><span>// 5 = Q1, 6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ</span><span>
+                                            	</span><span>// 10 = R, 11 = R2, 12 = Time Trial</span><span>
+    </span><span>int8</span><span>            m_trackId</span><span>;</span><span>         		</span><span>// -1 for unknown, 0-21 for tracks, see appendix</span><span>
+    </span><span>uint8</span><span>           m_formula</span><span>;</span><span>                  	</span><span>// Formula, 0 = F1 Modern, 1 = F1 Classic, 2 = F2,</span><span>
+</span><span>// 3 = F1 Generic</span><span>
+    </span><span>uint16</span><span>          m_sessionTimeLeft</span><span>;</span><span>    	</span><span>// Time left in session in seconds</span><span>
+    </span><span>uint16</span><span>          m_sessionDuration</span><span>;</span><span>     	</span><span>// Session duration in seconds</span><span>
+    </span><span>uint8</span><span>           m_pitSpeedLimit</span><span>;</span><span>      	</span><span>// Pit speed limit in kilometres per hour</span><span>
+    </span><span>uint8</span><span>           m_gamePaused</span><span>;</span><span>                </span><span>// Whether the game is paused</span><span>
+    </span><span>uint8</span><span>           m_isSpectating</span><span>;</span><span>        	</span><span>// Whether the player is spectating</span><span>
+    </span><span>uint8</span><span>           m_spectatorCarIndex</span><span>;</span><span>  	</span><span>// Index of the car being spectated</span><span>
+    </span><span>uint8</span><span>           m_sliProNativeSupport</span><span>;</span><span>	</span><span>// SLI Pro support, 0 = inactive, 1 = active</span><span>
+    </span><span>uint8</span><span>           m_numMarshalZones</span><span>;</span><span>         	</span><span>// Number of marshal zones to follow</span><span>
+    </span><span>MarshalZone</span><span>     m_marshalZones</span><span>[</span><span>21</span><span>];</span><span>         	</span><span>// List of marshal zones – max 21</span><span>
+    </span><span>uint8</span><span>           m_safetyCarStatus</span><span>;</span><span>           </span><span>// 0 = no safety car, 1 = full safety car</span><span>
+                                                 </span><span>// 2 = virtual safety car</span><span>
+    </span><span>uint8</span><span>           m_networkGame</span><span>;</span><span>               </span><span>// 0 = offline, 1 = online</span><span>
+</span><span>};</span></pre>
+
+<h2>Lap Data Packet</h2>
+
+<p>The lap data packet gives details of all the cars in the session.</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: Rate as specified in menus</p>
+
+<p>Size: 843 bytes</p>
+
+<p>Version: 1</p>
+
+<pre style=""><span>struct</span><span> </span><span>LapData</span><span>
+</span><span>{</span><span>
+    </span><span>float</span><span>       m_lastLapTime</span><span>;</span><span>	       	</span><span>// Last lap time in seconds</span><span>
+    </span><span>float</span><span>       m_currentLapTime</span><span>;</span><span>	</span><span>// Current time around the lap in seconds</span><span>
+    </span><span>float</span><span>       m_bestLapTime</span><span>;</span><span>		</span><span>// Best lap time of the session in seconds</span><span>
+    </span><span>float</span><span>       m_sector1Time</span><span>;</span><span>		</span><span>// Sector 1 time in seconds</span><span>
+    </span><span>float</span><span>       m_sector2Time</span><span>;</span><span>		</span><span>// Sector 2 time in seconds</span><span>
+    </span><span>float</span><span>       m_lapDistance</span><span>;</span><span>		</span><span>// Distance vehicle is around current lap in metres – could</span><span>
+					</span><span>// be negative if line hasn’t been crossed yet</span><span>
+    </span><span>float</span><span>       m_totalDistance</span><span>;</span><span>		</span><span>// Total distance travelled in session in metres – could</span><span>
+					</span><span>// be negative if line hasn’t been crossed yet</span><span>
+    </span><span>float</span><span>       m_safetyCarDelta</span><span>;</span><span>        </span><span>// Delta in seconds for safety car</span><span>
+    </span><span>uint8</span><span>       m_carPosition</span><span>;</span><span>   	</span><span>// Car race position</span><span>
+    </span><span>uint8</span><span>       m_currentLapNum</span><span>;</span><span>		</span><span>// Current lap number</span><span>
+    </span><span>uint8</span><span>       m_pitStatus</span><span>;</span><span>            	</span><span>// 0 = none, 1 = pitting, 2 = in pit area</span><span>
+    </span><span>uint8</span><span>       m_sector</span><span>;</span><span>               	</span><span>// 0 = sector1, 1 = sector2, 2 = sector3</span><span>
+    </span><span>uint8</span><span>       m_currentLapInvalid</span><span>;</span><span>    	</span><span>// Current lap invalid - 0 = valid, 1 = invalid</span><span>
+    </span><span>uint8</span><span>       m_penalties</span><span>;</span><span>            	</span><span>// Accumulated time penalties in seconds to be added</span><span>
+    </span><span>uint8</span><span>       m_gridPosition</span><span>;</span><span>         	</span><span>// Grid position the vehicle started the race in</span><span>
+    </span><span>uint8</span><span>       m_driverStatus</span><span>;</span><span>         	</span><span>// Status of driver - 0 = in garage, 1 = flying lap</span><span>
+</span><span>// 2 = in lap, 3 = out lap, 4 = on track</span><span>
+    </span><span>uint8</span><span>       m_resultStatus</span><span>;</span><span>          </span><span>// Result status - 0 = invalid, 1 = inactive, 2 = active</span><span>
+</span><span>// 3 = finished, 4 = disqualified, 5 = not classified</span><span>
+</span><span>// 6 = retired</span><span>
+</span><span>};</span><span>
+
+
+</span><span>struct</span><span> </span><span>PacketLapData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    m_header</span><span>;</span><span>              </span><span>// Header</span><span>
+
+    </span><span>LapData</span><span>         m_lapData</span><span>[</span><span>20</span><span>];</span><span>         </span><span>// Lap data for all cars on track</span><span>
+</span><span>};</span><span>
+</span></pre>
+
+<h2>Event Packet</h2>
+
+<p>
+  This packet gives details of events that happen during the course of a
+  session.
+</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: When the event occurs</p>
+
+<p>Size: 32 bytes</p>
+
+<p>Version: 1</p>
+
+<pre
+  style=""
+><span>// The event details packet is different for each type of event.</span><span>
+</span><span>// Make sure only the correct type is interpreted.</span><span>
+</span><span>union</span><span> </span><span>EventDataDetails</span><span>
+</span><span>{</span><span>
+    </span><span>struct</span><span>
+    </span><span>{</span><span>
+        </span><span>uint8</span><span>	vehicleIdx</span><span>;</span><span> </span><span>// Vehicle index of car achieving fastest lap</span><span>
+        </span><span>float</span><span>	lapTime</span><span>;</span><span>    </span><span>// Lap time is in seconds</span><span>
+    </span><span>}</span><span> </span><span>FastestLap</span><span>;</span><span>
+
+    </span><span>struct</span><span>
+    </span><span>{</span><span>
+        </span><span>uint8</span><span>   vehicleIdx</span><span>;</span><span> </span><span>// Vehicle index of car retiring</span><span>
+    </span><span>}</span><span> </span><span>Retirement</span><span>;</span><span>
+
+    </span><span>struct</span><span>
+    </span><span>{</span><span>
+        </span><span>uint8</span><span>   vehicleIdx</span><span>;</span><span> </span><span>// Vehicle index of team mate</span><span>
+    </span><span>}</span><span> </span><span>TeamMateInPits</span><span>;</span><span>
+
+    </span><span>struct</span><span>
+    </span><span>{</span><span>
+        </span><span>uint8</span><span>   vehicleIdx</span><span>;</span><span> </span><span>// Vehicle index of the race winner</span><span>
+    </span><span>}</span><span> </span><span>RaceWinner</span><span>;</span><span>
+</span><span>};</span><span>
+
+</span><span>struct</span><span> </span><span>PacketEventData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    	m_header</span><span>;</span><span>               </span><span>// Header</span><span>
+
+</span><span>uint8</span><span>           	m_eventStringCode</span><span>[</span><span>4</span><span>];</span><span>   </span><span>// Event string code, see below</span><span>
+</span><span>EventDataDetails</span><span>	m_eventDetails</span><span>;</span><span>         </span><span>// Event details - should be interpreted differently</span><span>
+</span><span>// for each type</span><span>
+</span><span>};</span><span>
+</span></pre>
+
+<h2>Event String Codes</h2>
+
+<table border="1" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <b>Event</b>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <b>Code</b>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <b>Description</b>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>Session Started</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“SSTA”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>Sent when the session starts</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>Session Ended</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“SEND”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>Sent when the session ends</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>Fastest Lap</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“FTLP”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>When a driver achieves the fastest lap</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>Retirement</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“RTMT”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>When a driver retires</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>DRS enabled</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“DRSE”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>Race control have enabled DRS</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>DRS disabled</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“DRSD”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>Race control have disabled DRS</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>Team mate in pits</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“TMPT”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>Your team mate has entered the pits</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>Chequered flag</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“CHQF”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>The chequered flag has been waved</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="186">
+        <p>
+          <span>Race Winner</span>
+        </p>
+      </td>
+      <td valign="top" width="81">
+        <p>
+          <span>“RCWN”</span>
+        </p>
+      </td>
+      <td valign="top" width="315">
+        <p>
+          <span>The race winner is announced</span>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Participants Packet</h2>
+
+<p>
+  This is a list of participants in the race. If the vehicle is controlled by
+  AI, then the name will be the driver name. If this is a multiplayer game, the
+  names will be the Steam Id on PC, or the LAN name if appropriate.
+</p>
+
+<p>
+  N.B. on Xbox One, the names will always be the driver name, on PS4 the name
+  will be the LAN name if playing a LAN game, otherwise it will be the driver
+  name.
+</p>
+
+<p>The array should be indexed by vehicle index.</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: Every 5 seconds</p>
+
+<p>Size: 1104 bytes</p>
+
+<p>Version: 1</p>
+
+<pre
+  style=""
+><span>struct</span><span> </span><span>ParticipantData</span><span>
+</span><span>{</span><span>
+    </span><span>uint8</span><span>      m_aiControlled</span><span>;</span><span>           </span><span>// Whether the vehicle is AI (1) or Human (0) controlled</span><span>
+    </span><span>uint8</span><span>      m_driverId</span><span>;</span><span>		</span><span>// Driver id - see appendix</span><span>
+    </span><span>uint8</span><span>      m_teamId</span><span>;</span><span>                 </span><span>// Team id - see appendix</span><span>
+    </span><span>uint8</span><span>      m_raceNumber</span><span>;</span><span>             </span><span>// Race number of the car</span><span>
+    </span><span>uint8</span><span>      m_nationality</span><span>;</span><span>            </span><span>// Nationality of the driver</span><span>
+    </span><span>char</span><span>       m_name</span><span>[</span><span>48</span><span>];</span><span>               </span><span>// Name of participant in UTF-8 format – null terminated</span><span>
+					</span><span>// Will be truncated with … (U+2026) if too long</span><span>
+    </span><span>uint8</span><span>      m_yourTelemetry</span><span>;</span><span>          </span><span>// The player's UDP setting, 0 = restricted, 1 = public</span><span>
+</span><span>};</span><span>
+
+</span><span>struct</span><span> </span><span>PacketParticipantsData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    m_header</span><span>;</span><span>            </span><span>// Header</span><span>
+
+    </span><span>uint8</span><span>           m_numActiveCars</span><span>;</span><span>	</span><span>// Number of active cars in the data – should match number of</span><span>
+</span><span>// cars on HUD</span><span>
+    </span><span>ParticipantData</span><span> m_participants</span><span>[</span><span>20</span><span>];</span><span>
+</span><span>};</span></pre>
+
+<h2>Car Setups Packet</h2>
+
+<p>
+  This packet details the car setups for each vehicle in the session. Note that
+  in multiplayer games, other player cars will appear as blank, you will only be
+  able to see your car setup and AI cars.
+</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: 2 per second</p>
+
+<p>Size: 843 bytes</p>
+
+<p>Version: 1</p>
+
+<pre style=""><span>struct</span><span> </span><span>CarSetupData</span><span>
+</span><span>{</span><span>
+    </span><span>uint8</span><span>     m_frontWing</span><span>;</span><span>                </span><span>// Front wing aero</span><span>
+    </span><span>uint8</span><span>     m_rearWing</span><span>;</span><span>                 </span><span>// Rear wing aero</span><span>
+    </span><span>uint8</span><span>     m_onThrottle</span><span>;</span><span>               </span><span>// Differential adjustment on throttle (percentage)</span><span>
+    </span><span>uint8</span><span>     m_offThrottle</span><span>;</span><span>              </span><span>// Differential adjustment off throttle (percentage)</span><span>
+    </span><span>float</span><span>     m_frontCamber</span><span>;</span><span>              </span><span>// Front camber angle (suspension geometry)</span><span>
+    </span><span>float</span><span>     m_rearCamber</span><span>;</span><span>               </span><span>// Rear camber angle (suspension geometry)</span><span>
+    </span><span>float</span><span>     m_frontToe</span><span>;</span><span>                 </span><span>// Front toe angle (suspension geometry)</span><span>
+    </span><span>float</span><span>     m_rearToe</span><span>;</span><span>                  </span><span>// Rear toe angle (suspension geometry)</span><span>
+    </span><span>uint8</span><span>     m_frontSuspension</span><span>;</span><span>          </span><span>// Front suspension</span><span>
+    </span><span>uint8</span><span>     m_rearSuspension</span><span>;</span><span>           </span><span>// Rear suspension</span><span>
+    </span><span>uint8</span><span>     m_frontAntiRollBar</span><span>;</span><span>         </span><span>// Front anti-roll bar</span><span>
+    </span><span>uint8</span><span>     m_rearAntiRollBar</span><span>;</span><span>          </span><span>// Front anti-roll bar</span><span>
+    </span><span>uint8</span><span>     m_frontSuspensionHeight</span><span>;</span><span>    </span><span>// Front ride height</span><span>
+    </span><span>uint8</span><span>     m_rearSuspensionHeight</span><span>;</span><span>     </span><span>// Rear ride height</span><span>
+    </span><span>uint8</span><span>     m_brakePressure</span><span>;</span><span>            </span><span>// Brake pressure (percentage)</span><span>
+    </span><span>uint8</span><span>     m_brakeBias</span><span>;</span><span>                </span><span>// Brake bias (percentage)</span><span>
+    </span><span>float</span><span>     m_frontTyrePressure</span><span>;</span><span>        </span><span>// Front tyre pressure (PSI)</span><span>
+    </span><span>float</span><span>     m_rearTyrePressure</span><span>;</span><span>         </span><span>// Rear tyre pressure (PSI)</span><span>
+    </span><span>uint8</span><span>     m_ballast</span><span>;</span><span>                  </span><span>// Ballast</span><span>
+    </span><span>float</span><span>     m_fuelLoad</span><span>;</span><span>                 </span><span>// Fuel load</span><span>
+</span><span>};</span><span>
+
+</span><span>struct</span><span> </span><span>PacketCarSetupData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    m_header</span><span>;</span><span>            </span><span>// Header</span><span>
+
+    </span><span>CarSetupData</span><span>    m_carSetups</span><span>[</span><span>20</span><span>];</span><span>
+</span><span>};</span></pre>
+
+<h2>Car Telemetry Packet</h2>
+
+<p>
+  This packet details telemetry for all the cars in the race. It details various
+  values that would be recorded on the car such as speed, throttle application,
+  DRS etc.
+</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: Rate as specified in menus</p>
+
+<p>Size: 1347 bytes</p>
+
+<p>Version: 1</p>
+
+<pre
+  style=""
+><span>struct</span><span> </span><span>CarTelemetryData</span><span>
+</span><span>{</span><span>
+    </span><span>uint16</span><span>    m_speed</span><span>;</span><span>                    </span><span>// Speed of car in kilometres per hour</span><span>
+    </span><span>float</span><span>     m_throttle</span><span>;</span><span>                 </span><span>// Amount of throttle applied (0.0 to 1.0)</span><span>
+    </span><span>float</span><span>     m_steer</span><span>;</span><span>                    </span><span>// Steering (-1.0 (full lock left) to 1.0 (full lock right))</span><span>
+    </span><span>float</span><span>     m_brake</span><span>;</span><span>                    </span><span>// Amount of brake applied (0.0 to 1.0)</span><span>
+    </span><span>uint8</span><span>     m_clutch</span><span>;</span><span>                   </span><span>// Amount of clutch applied (0 to 100)</span><span>
+    </span><span>int8</span><span>      m_gear</span><span>;</span><span>                     </span><span>// Gear selected (1-8, N=0, R=-1)</span><span>
+    </span><span>uint16</span><span>    m_engineRPM</span><span>;</span><span>                </span><span>// Engine RPM</span><span>
+    </span><span>uint8</span><span>     m_drs</span><span>;</span><span>                      </span><span>// 0 = off, 1 = on</span><span>
+    </span><span>uint8</span><span>     m_revLightsPercent</span><span>;</span><span>         </span><span>// Rev lights indicator (percentage)</span><span>
+    </span><span>uint16</span><span>    m_brakesTemperature</span><span>[</span><span>4</span><span>];</span><span>     </span><span>// Brakes temperature (celsius)</span><span>
+    </span><span>uint16</span><span>    m_tyresSurfaceTemperature</span><span>[</span><span>4</span><span>];</span><span> </span><span>// Tyres surface temperature (celsius)</span><span>
+    </span><span>uint16</span><span>    m_tyresInnerTemperature</span><span>[</span><span>4</span><span>];</span><span> </span><span>// Tyres inner temperature (celsius)</span><span>
+    </span><span>uint16</span><span>    m_engineTemperature</span><span>;</span><span>        </span><span>// Engine temperature (celsius)</span><span>
+    </span><span>float</span><span>     m_tyresPressure</span><span>[</span><span>4</span><span>];</span><span>         </span><span>// Tyres pressure (PSI)</span><span>
+    </span><span>uint8</span><span>     m_surfaceType</span><span>[</span><span>4</span><span>];</span><span>           </span><span>// Driving surface, see appendices</span><span>
+</span><span>};</span><span>
+
+</span><span>struct</span><span> </span><span>PacketCarTelemetryData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    	m_header</span><span>;</span><span>	      </span><span>// Header</span><span>
+
+    </span><span>CarTelemetryData</span><span>	m_carTelemetryData</span><span>[</span><span>20</span><span>];</span><span>
+
+    </span><span>uint32</span><span>              m_buttonStatus</span><span>;</span><span>        </span><span>// Bit flags specifying which buttons are being pressed</span><span>
+                                               </span><span>// currently - see appendices</span><span>
+</span><span>};</span></pre>
+
+<h2>Car Status Packet</h2>
+
+<p>
+  This packet details car statuses for all the cars in the race. It includes
+  values such as the damage readings on the car.
+</p>
+
+<p>&nbsp;</p>
+
+<p>Frequency: Rate as specified in menus</p>
+
+<p>Size: 1143 bytes</p>
+
+<p>Version: 1</p>
+
+<pre style=""><span>struct</span><span> </span><span>CarStatusData</span><span>
+</span><span>{</span><span>
+    </span><span>uint8</span><span>       m_tractionControl</span><span>;</span><span>          </span><span>// 0 (off) - 2 (high)</span><span>
+    </span><span>uint8</span><span>       m_antiLockBrakes</span><span>;</span><span>           </span><span>// 0 (off) - 1 (on)</span><span>
+    </span><span>uint8</span><span>       m_fuelMix</span><span>;</span><span>                  </span><span>// Fuel mix - 0 = lean, 1 = standard, 2 = rich, 3 = max</span><span>
+    </span><span>uint8</span><span>       m_frontBrakeBias</span><span>;</span><span>           </span><span>// Front brake bias (percentage)</span><span>
+    </span><span>uint8</span><span>       m_pitLimiterStatus</span><span>;</span><span>         </span><span>// Pit limiter status - 0 = off, 1 = on</span><span>
+    </span><span>float</span><span>       m_fuelInTank</span><span>;</span><span>               </span><span>// Current fuel mass</span><span>
+</span><span>float</span><span>       m_fuelCapacity</span><span>;</span><span>             </span><span>// Fuel capacity</span><span>
+</span><span>float</span><span>       m_fuelRemainingLaps</span><span>;</span><span>        </span><span>// Fuel remaining in terms of laps (value on MFD)</span><span>
+    </span><span>uint16</span><span>      m_maxRPM</span><span>;</span><span>                   </span><span>// Cars max RPM, point of rev limiter</span><span>
+    </span><span>uint16</span><span>      m_idleRPM</span><span>;</span><span>                  </span><span>// Cars idle RPM</span><span>
+    </span><span>uint8</span><span>       m_maxGears</span><span>;</span><span>                 </span><span>// Maximum number of gears</span><span>
+    </span><span>uint8</span><span>       m_drsAllowed</span><span>;</span><span>               </span><span>// 0 = not allowed, 1 = allowed, -1 = unknown</span><span>
+    </span><span>uint8</span><span>       m_tyresWear</span><span>[</span><span>4</span><span>];</span><span>             </span><span>// Tyre wear percentage</span><span>
+    </span><span>uint8</span><span>       m_actualTyreCompound</span><span>;</span><span>	   </span><span>// F1 Modern - 16 = C5, 17 = C4, 18 = C3, 19 = C2, 20 = C1</span><span>
+   					   </span><span>// 7 = inter, 8 = wet</span><span>
+   					   </span><span>// F1 Classic - 9 = dry, 10 = wet</span><span>
+   					   </span><span>// F2 – 11 = super soft, 12 = soft, 13 = medium, 14 = hard</span><span>
+   					   </span><span>// 15 = wet</span><span>
+</span><span>uint8</span><span>       m_tyreVisualCompound</span><span>;</span><span>       </span><span>// F1 visual (can be different from actual compound)</span><span>
+   </span><span>// 16 = soft, 17 = medium, 18 = hard, 7 = inter, 8 = wet</span><span>
+   </span><span>// F1 Classic – same as above</span><span>
+   </span><span>// F2 – same as above</span><span>
+    </span><span>uint8</span><span>       m_tyresDamage</span><span>[</span><span>4</span><span>];</span><span>           </span><span>// Tyre damage (percentage)</span><span>
+    </span><span>uint8</span><span>       m_frontLeftWingDamage</span><span>;</span><span>      </span><span>// Front left wing damage (percentage)</span><span>
+    </span><span>uint8</span><span>       m_frontRightWingDamage</span><span>;</span><span>     </span><span>// Front right wing damage (percentage)</span><span>
+    </span><span>uint8</span><span>       m_rearWingDamage</span><span>;</span><span>           </span><span>// Rear wing damage (percentage)</span><span>
+    </span><span>uint8</span><span>       m_engineDamage</span><span>;</span><span>             </span><span>// Engine damage (percentage)</span><span>
+    </span><span>uint8</span><span>       m_gearBoxDamage</span><span>;</span><span>            </span><span>// Gear box damage (percentage)</span><span>
+    </span><span>int8</span><span>        m_vehicleFiaFlags</span><span>;</span><span>	   </span><span>// -1 = invalid/unknown, 0 = none, 1 = green</span><span>
+                                            </span><span>// 2 = blue, 3 = yellow, 4 = red</span><span>
+    </span><span>float</span><span>       m_ersStoreEnergy</span><span>;</span><span>           </span><span>// ERS energy store in Joules</span><span>
+    </span><span>uint8</span><span>       m_ersDeployMode</span><span>;</span><span>            </span><span>// ERS deployment mode, 0 = none, 1 = low, 2 = medium</span><span>
+   					   </span><span>// 3 = high, 4 = overtake, 5 = hotlap</span><span>
+    </span><span>float</span><span>       m_ersHarvestedThisLapMGUK</span><span>;</span><span>  </span><span>// ERS energy harvested this lap by MGU-K</span><span>
+    </span><span>float</span><span>       m_ersHarvestedThisLapMGUH</span><span>;</span><span>  </span><span>// ERS energy harvested this lap by MGU-H</span><span>
+    </span><span>float</span><span>       m_ersDeployedThisLap</span><span>;</span><span>       </span><span>// ERS energy deployed this lap</span><span>
+</span><span>};</span><span>
+
+</span><span>struct</span><span> </span><span>PacketCarStatusData</span><span>
+</span><span>{</span><span>
+    </span><span>PacketHeader</span><span>    	m_header</span><span>;</span><span>	   </span><span>// Header</span><span>
+
+    </span><span>CarStatusData</span><span>	m_carStatusData</span><span>[</span><span>20</span><span>];</span><span>
+</span><span>};</span></pre>
+
+<h2>Restricted data (Your Telemetry setting)</h2>
+
+<p>
+  There is some data in the UDP that you may not want other players seeing if
+  you are in a multiplayer game. This is controlled by the “Your Telemetry”
+  setting in the Telemetry options. The options are:
+</p>
+
+<ul>
+  <li>
+    Restricted (Default) – other players viewing the UDP data will not see
+    values for your car
+  </li>
+  <li>Public – all other players can see all the data for your car</li>
+</ul>
+
+<p>
+  Note: You can always see the data for the car you are driving regardless of
+  the setting.
+</p>
+
+<p>
+  The following data items are set to zero if the player driving the car in
+  question has their “Your Telemetry” set to “Restricted”:
+</p>
+
+<p>Car status packet</p>
+
+<ul>
+  <li>m_fuelInTank</li>
+  <li align="left">m_fuelCapacity</li>
+  <li align="left">m_fuelMix</li>
+  <li align="left">m_fuelRemainingLaps</li>
+  <li align="left">m_frontBrakeBias</li>
+  <li align="left">m_frontLeftWingDamage</li>
+  <li align="left">m_frontRightWingDamage</li>
+  <li align="left">m_rearWingDamage</li>
+  <li align="left">m_engineDamage</li>
+  <li align="left">m_gearBoxDamage</li>
+  <li align="left">m_tyresWear (All four wheels)</li>
+  <li align="left">m_tyresDamage (All four wheels)</li>
+  <li align="left">m_ersDeployMode</li>
+  <li align="left">m_ersStoreEnergy</li>
+  <li align="left">m_ersDeployedThisLap</li>
+  <li align="left">m_ersHarvestedThisLapMGUK</li>
+  <li align="left">m_ersHarvestedThisLapMGUH</li>
+</ul>
