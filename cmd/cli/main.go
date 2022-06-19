@@ -118,6 +118,32 @@ func main() {
 				},
 			},
 		},
+		{
+			Name: "database",
+			Subcommands: []*cli.Command{
+				{
+					Name:   "ingest",
+					Usage:  "ingest a collected file into the time series database",
+					Action: ActionDatabaseIngest,
+					Flags: []cli.Flag{
+						&cli.StringFlag{
+							Name:      "input",
+							Aliases:   []string{"i"},
+							Usage:     "path to input",
+							Required:  true,
+							TakesFile: true,
+						},
+						&cli.StringFlag{
+							Name:      "output",
+							Aliases:   []string{"o"},
+							Usage:     "path to output",
+							Required:  true,
+							TakesFile: true,
+						},
+					},
+				},
+			},
+		},
 	}
 
 	err := app.Run(os.Args)

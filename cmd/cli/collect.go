@@ -39,6 +39,7 @@ func ActionCollect(ctx *cli.Context) error {
 	for {
 		n, _, err := socket.ReadFrom(buffer)
 		if err != nil {
+			log.Error("Failed to read from socket", zap.Error(err))
 			break
 		}
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/AlexGustafsson/f1-telemetry/internal/server"
+	"github.com/AlexGustafsson/f1-telemetry/internal/timeseries"
 	"github.com/AlexGustafsson/f1-telemetry/telemetry"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
@@ -26,7 +27,7 @@ func ActionServer(ctx *cli.Context) error {
 	}
 	defer server.Close()
 
-	timeSeries, err := telemetry.NewTimeSeries(outputPath, log)
+	timeSeries, err := timeseries.New(outputPath, log)
 	if err != nil {
 		log.Fatal("Failed to create time series for incoming packets", zap.Error(err))
 	}
