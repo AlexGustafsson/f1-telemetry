@@ -25,12 +25,12 @@ func ActionGraph(ctx *cli.Context) error {
 		log.Fatal("Failed to create time series for incoming packets", zap.Error(err))
 	}
 
-	querier, err := timeSeries.Storage.Querier(context.Background(), 0, 2000)
+	querier, err := timeSeries.Storage.Querier(context.Background(), 0, 20*60*1000)
 	if err != nil {
 		log.Fatal("Failed to create time series querier", zap.Error(err))
 	}
 
-	matcher, err := labels.NewMatcher(labels.MatchEqual, labels.MetricName, timeseries.LabelSpeed)
+	matcher, err := labels.NewMatcher(labels.MatchEqual, labels.MetricName, timeseries.LabelCurrentLap)
 	if err != nil {
 		log.Fatal("Failed to create matcher", zap.Error(err))
 	}

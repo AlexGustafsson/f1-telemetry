@@ -14,11 +14,26 @@ import (
 )
 
 const (
+	LabelSelf string = "self"
+
 	LabelSpeed    string = "speed"
-	LabelSteer    string = "steer"
 	LabelThrottle string = "throttle"
+	LabelSteer    string = "steer"
 	LabelBrake    string = "brake"
+	LabelClutch   string = "clutch"
 	LabelGear     string = "gear"
+
+	LabelCurrentLap     string = "current_lap"
+	LabelCurrentLapTime string = "current_lap_time"
+	LabelSector         string = "sector"
+	LabelRacePosition   string = "race_position"
+	LabelPitStatus      string = "pit_status"
+	LabelPitStops       string = "pit_stops"
+	LabelLapDistance    string = "lap_distance"
+
+	LabelActualTyreCompound string = "actual_tyre_compound"
+	LabelVisualTyreCompound string = "visual_tyre_compound"
+	LabelTyreAge            string = "tyre_age"
 )
 
 type TimeSeries struct {
@@ -67,12 +82,41 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 
 			for car, telemetry := range message.Telemetry {
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelSpeed, message.SessionTime, float64(telemetry.Speed))
-				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelSteer, message.SessionTime, float64(telemetry.Steer))
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelThrottle, message.SessionTime, float64(telemetry.Throttle))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelSteer, message.SessionTime, float64(telemetry.Steer))
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelBrake, message.SessionTime, float64(telemetry.Brake))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelClutch, message.SessionTime, float64(telemetry.Clutch))
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelGear, message.SessionTime, float64(telemetry.Gear))
+			}
 
-				t.log.Debug("Consumed telemetry", zap.Uint64("session", packet.Session()), zap.Int("car", car), zap.Uint32("timestamp", uint32(message.SessionTime)))
+			if err := appender.Commit(); err != nil {
+				return err
+			}
+		case f12021.PacketIDLapData:
+			message := packet.(*f12021.PacketLap)
+			appender := t.Storage.Appender(context.Background())
+
+			for car, telemetry := range message.LapData {
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelSector, message.SessionTime, float64(telemetry.Sector))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelCurrentLap, message.SessionTime, float64(telemetry.CurrentLapNumber))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelRacePosition, message.SessionTime, float64(telemetry.CarPosition))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelPitStatus, message.SessionTime, float64(telemetry.PitStatus))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelPitStops, message.SessionTime, float64(telemetry.PitStops))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelLapDistance, message.SessionTime, float64(telemetry.LapDistance))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelCurrentLapTime, message.SessionTime, float64(telemetry.CurrentLapTimeMilliseconds))
+			}
+
+			if err := appender.Commit(); err != nil {
+				return err
+			}
+		case f12021.PacketIDCarStatus:
+			message := packet.(*f12021.PacketCarStatus)
+			appender := t.Storage.Appender(context.Background())
+
+			for car, telemetry := range message.Cars {
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelActualTyreCompound, message.SessionTime, float64(telemetry.TyreActualCompound))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelVisualTyreCompound, message.SessionTime, float64(telemetry.TyreVisualCompound))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelTyreAge, message.SessionTime, float64(telemetry.TyresAgeLaps))
 			}
 
 			if err := appender.Commit(); err != nil {
