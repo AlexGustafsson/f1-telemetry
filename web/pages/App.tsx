@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react'
-import {
-  BrowserRouter,
-  NavLink,
-  Route,
-  Routes,
-  useNavigate,
-} from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, Route, Routes, useNavigate } from 'react-router-dom'
 
-import { ChartIcon, HomeIcon, LeftArrowIcon, SettingsIcon } from '../icons'
+import {
+  ChartIcon,
+  CodeIcon,
+  HomeIcon,
+  LeftArrowIcon,
+  SettingsIcon,
+} from '../icons'
 import GraphPage from './GraphPage'
 import HomePage from './HomePage'
+import QueryPage from './QueryPage'
 import SettingsPage from './SettingsPage'
 
 export default function (): JSX.Element {
@@ -42,6 +43,16 @@ export default function (): JSX.Element {
             </li>
           </NavLink>
           <NavLink
+            to="/query"
+            className={(navData) =>
+              navData.isActive ? 'text-red-500' : 'text-slate-400'
+            }
+          >
+            <li>
+              <CodeIcon className="w-8 h-8" />
+            </li>
+          </NavLink>
+          <NavLink
             to="/settings"
             className={(navData) =>
               navData.isActive ? 'text-red-500' : 'text-slate-400'
@@ -67,6 +78,7 @@ export default function (): JSX.Element {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/graphs" element={<GraphPage />} />
+          <Route path="/query" element={<QueryPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
