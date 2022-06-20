@@ -15,7 +15,7 @@ export default function (): JSX.Element {
 
   return (
     <div>
-      <h1>Home</h1>
+      <h1>Query</h1>
       <div className="card">
         <h2>Query data</h2>
         <label>
@@ -45,10 +45,12 @@ export default function (): JSX.Element {
         <button disabled={loading} onClick={performQuery}>
           Query
         </button>
-
-        <div className="card">
-          <code>timestamp,data,foo 1,2,3 1,2,3 1,2,3 1,2,3</code>
-        </div>
+      </div>
+      <div className="card">
+        <h2>Result</h2>
+        <code className="block">
+          timestamp,data,foo 1,2,3 1,2,3 1,2,3 1,2,3
+        </code>
       </div>
     </div>
   )
