@@ -52,7 +52,7 @@ type PacketCarStatus struct {
 		MaxRPM                  uint16
 		IdleRPM                 uint16
 		MaxGears                uint8
-		DRSAllowd               bool
+		DRSAllowed              bool
 		DRSActivationDistance   uint16
 		TyreActualCompound      TyreCompound
 		TyreVisualCompound      VisualTyreCompound
