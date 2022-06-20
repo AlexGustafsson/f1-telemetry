@@ -1,7 +1,5 @@
 /data
-/cli
-.DS_Store
 /node_modules
 /database
-/target
 /dist
+/target
