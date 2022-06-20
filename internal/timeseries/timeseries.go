@@ -22,6 +22,7 @@ const (
 	LabelBrake    string = "brake"
 	LabelClutch   string = "clutch"
 	LabelGear     string = "gear"
+	LabelDRS      string = "drs"
 
 	LabelCurrentLap     string = "current_lap"
 	LabelCurrentLapTime string = "current_lap_time"
@@ -87,6 +88,7 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelBrake, message.SessionTime, float64(telemetry.Brake))
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelClutch, message.SessionTime, float64(telemetry.Clutch))
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelGear, message.SessionTime, float64(telemetry.Gear))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), LabelDRS, message.SessionTime, convertBoolToFloat64(telemetry.DRS))
 			}
 
 			if err := appender.Commit(); err != nil {
