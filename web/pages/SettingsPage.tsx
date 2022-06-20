@@ -18,6 +18,7 @@ export default function (): JSX.Element {
     <div>
       <h1>Settings</h1>
       <div className="card">
+        <h2>UDP Telemetry</h2>
         <label>
           Address
           <input
