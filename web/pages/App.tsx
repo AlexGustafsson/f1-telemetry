@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 
 import { ChartIcon, HomeIcon, LeftArrowIcon, SettingsIcon } from '../icons'
+import GraphPage from './GraphPage'
 import HomePage from './HomePage'
 import SettingsPage from './SettingsPage'
 
@@ -31,7 +32,7 @@ export default function (): JSX.Element {
             </li>
           </NavLink>
           <NavLink
-            to="/graph"
+            to="/graphs"
             className={(navData) =>
               navData.isActive ? 'text-red-500' : 'text-slate-400'
             }
@@ -65,6 +66,7 @@ export default function (): JSX.Element {
         </header>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/graphs" element={<GraphPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
