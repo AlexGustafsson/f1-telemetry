@@ -105,9 +105,9 @@ func main() {
 			},
 		},
 		{
-			Name:   "graph",
-			Usage:  "graph collected telemetry",
-			Action: ActionGraph,
+			Name:   "query",
+			Usage:  "query collected telemetry",
+			Action: ActionQuery,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:      "input",
@@ -115,6 +115,31 @@ func main() {
 					Usage:     "path to time series input",
 					Required:  true,
 					TakesFile: true,
+				},
+				&cli.StringFlag{
+					Name:     "query",
+					Usage:    "query to execute",
+					Required: true,
+				},
+				&cli.Int64Flag{
+					Name:     "from",
+					Usage:    "start timestamp",
+					Required: true,
+				},
+				&cli.Int64Flag{
+					Name:     "to",
+					Usage:    "end timestamp",
+					Required: true,
+				},
+				&cli.DurationFlag{
+					Name:        "interval",
+					Usage:       "metric interval",
+					DefaultText: "1ms",
+				},
+				&cli.IntFlag{
+					Name:        "samples",
+					Usage:       "maximum samples to return",
+					DefaultText: "1000",
 				},
 			},
 		},
