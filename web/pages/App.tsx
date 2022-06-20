@@ -52,7 +52,7 @@ export default function (): JSX.Element {
           </NavLink>
         </ul>
       </menu>
-      <main className="pl-28 py-5 pr-4 flex flex-col">
+      <main className="pl-24 py-5 pr-4 flex flex-col">
         <header className="mb-4 text-sm">
           {navDepth > 0 ? (
             <div

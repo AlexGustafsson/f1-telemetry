@@ -49,11 +49,7 @@
   }
 
   input[type="text"], input[type="number"] {
-    @apply rounded-md py-1 px-2 border-2 border-slate-200 bg-transparent my-2 h-6 box-content;
-  }
-
-  input[type="text"]:focus, input[type="number"]:focus {
-    @apply border-red-500;
+    @apply rounded-md py-1 px-2 bg-slate-600 my-2 h-6 box-content;
   }
 
   /* Chrome, Safari, Edge, Opera */
