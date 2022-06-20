@@ -6,7 +6,7 @@
 
 @layer base {
   html {
-    @apply antialiased;
+    @apply antialiased text-white bg-slate-800;
     -webkit-tap-highlight-color: transparent;
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -20,5 +20,61 @@
   textarea:focus,
   button:focus {
     outline: none;
+  }
+
+  h1 {
+    @apply text-xl mb-5;
+  }
+
+  h2 {
+    @apply text-lg mb-2;
+  }
+
+  button {
+    @apply bg-red-500 rounded-md py-1 px-2 cursor-pointer h-6 box-content;
+  }
+  button:disabled {
+    @apply bg-slate-400 text-slate-500 cursor-default;
+  }
+  button:active {
+    @apply scale-95;
+  }
+
+  form {
+    @apply w-96;
+  }
+
+  label {
+    @apply text-sm flex flex-col;
+  }
+
+  input[type="text"], input[type="number"] {
+    @apply rounded-md py-1 px-2 border-2 border-slate-200 bg-transparent my-2 h-6 box-content;
+  }
+
+  input[type="text"]:focus, input[type="number"]:focus {
+    @apply border-red-500;
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .card {
+    @apply p-4 bg-slate-700 rounded-lg my-2;
+  }
+
+  .card > .card {
+    @apply px-2 bg-slate-600 mt-4;
   }
 }
