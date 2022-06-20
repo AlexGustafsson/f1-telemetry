@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/AlexGustafsson/f1-telemetry/internal/timeseries"
@@ -26,8 +28,8 @@ func ActionQuery(ctx *cli.Context) error {
 	}
 
 	queryString := ctx.String("query")
-	start := timestamp.Time(ctx.Int64("from"))
-	end := timestamp.Time(ctx.Int64("to"))
+	start := timestamp.Time(ctx.Duration("from").Milliseconds())
+	end := timestamp.Time(ctx.Duration("to").Milliseconds())
 	interval := ctx.Duration("interval")
 	if interval == 0 {
 		interval = 1 * time.Millisecond
@@ -35,6 +37,10 @@ func ActionQuery(ctx *cli.Context) error {
 	samples := ctx.Int("samples")
 	if samples == 0 {
 		samples = 1000
+	}
+	format := ctx.String("format")
+	if format == "" {
+		format = "json"
 	}
 
 	engine := promql.NewEngine(promql.EngineOpts{Timeout: 30 * time.Second, MaxSamples: samples})
@@ -54,28 +60,34 @@ func ActionQuery(ctx *cli.Context) error {
 	var m map[string]string
 
 	switch result.Value.Type() {
-	case parser.ValueTypeScalar:
-		fmt.Println(result.Value.String())
 	case parser.ValueTypeMatrix:
 		matrix := result.Value.(promql.Matrix)
-		for _, series := range matrix {
-			m2 := series.Metric.Map()
-			if !headerPrinted {
-				m = series.Metric.Map()
-				fmt.Printf("timestamp,")
-				for k := range m {
-					fmt.Printf("%s,", k)
+		if format == "json" {
+			encoder := json.NewEncoder(os.Stdout)
+			encoder.SetIndent("", "  ")
+			encoder.Encode(matrix)
+		} else if format == "csv" {
+			for _, series := range matrix {
+				m2 := series.Metric.Map()
+				if !headerPrinted {
+					m = series.Metric.Map()
+					fmt.Printf("timestamp,")
+					for k := range m {
+						fmt.Printf("%s,", k)
+					}
+					fmt.Println("value")
+					headerPrinted = true
 				}
-				fmt.Println("value")
-				headerPrinted = true
-			}
-			for _, p := range series.Points {
-				fmt.Printf("%d,", p.T)
-				for k := range m {
-					fmt.Printf("%s,", m2[k])
+				for _, p := range series.Points {
+					fmt.Printf("%d,", p.T)
+					for k := range m {
+						fmt.Printf("%s,", m2[k])
+					}
+					fmt.Printf("%v\n", p.V)
 				}
-				fmt.Printf("%v\n", p.V)
 			}
+		} else {
+			log.Fatal("Unsupported output format", zap.String("format", format))
 		}
 	default:
 		log.Fatal("Unsupported result type", zap.String("type", string(result.Value.Type())))

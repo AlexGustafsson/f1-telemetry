@@ -121,14 +121,14 @@ func main() {
 					Usage:    "query to execute",
 					Required: true,
 				},
-				&cli.Int64Flag{
+				&cli.DurationFlag{
 					Name:     "from",
-					Usage:    "start timestamp",
+					Usage:    "start session time",
 					Required: true,
 				},
-				&cli.Int64Flag{
+				&cli.DurationFlag{
 					Name:     "to",
-					Usage:    "end timestamp",
+					Usage:    "end session time",
 					Required: true,
 				},
 				&cli.DurationFlag{
@@ -140,6 +140,11 @@ func main() {
 					Name:        "samples",
 					Usage:       "maximum samples to return",
 					DefaultText: "1000",
+				},
+				&cli.StringFlag{
+					Name:        "format",
+					Usage:       "specify the output format",
+					DefaultText: "json",
 				},
 			},
 		},
