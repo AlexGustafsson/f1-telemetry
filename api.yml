@@ -1,0 +1,46 @@
+openapi: 3.1.0
+
+info:
+  title: F1 Telemetry API
+  description: API for querying F1 telemetry using PromQL
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+paths:
+  /query/range:
+    post:
+      summary: Perform a range query.
+      responses:
+        '200': # status code
+          description: A JSON array of user names
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    description: All series the query resulted in
+                    items:
+                      $ref: '#/components/schemas/Series'
+
+components:
+  schemas:
+    Series:
+      type: object
+      properties:
+        metrics:
+          type: object
+          additionalProperties:
+            type: string
+        values:
+          $ref: '#/components/schemas/Point'
+    Point:
+      type: array
+      prefixItems:
+        - type: number
+          description: Session time the value was recorded
+        - type: string
+          description: Value

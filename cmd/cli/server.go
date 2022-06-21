@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net/http"
+
+	"github.com/AlexGustafsson/f1-telemetry/internal/api"
 	"github.com/AlexGustafsson/f1-telemetry/internal/server"
 	"github.com/AlexGustafsson/f1-telemetry/internal/timeseries"
 	"github.com/AlexGustafsson/f1-telemetry/telemetry"
@@ -14,18 +17,17 @@ func ActionServer(ctx *cli.Context) error {
 		return err
 	}
 
-	address := ctx.String("address")
-	if address == "" {
-		address = "0.0.0.0:20777"
+	telemetryAddress := ctx.String("telemetry-address")
+	if telemetryAddress == "" {
+		telemetryAddress = "0.0.0.0:20777"
+	}
+
+	apiAddress := ctx.String("api-address")
+	if apiAddress == "" {
+		apiAddress = "0.0.0.0:8080"
 	}
 
 	outputPath := ctx.String("output")
-
-	server, err := server.Listen(address)
-	if err != nil {
-		log.Fatal("Failed to listen for incoming packets", zap.Error(err))
-	}
-	defer server.Close()
 
 	timeSeries, err := timeseries.New(outputPath, log)
 	if err != nil {
@@ -33,18 +35,30 @@ func ActionServer(ctx *cli.Context) error {
 	}
 	defer timeSeries.Close()
 
+	log.Info("Telemetry server starting", zap.String("address", telemetryAddress))
+	telemetryServer, err := server.Listen(telemetryAddress)
+	if err != nil {
+		log.Fatal("Failed to listen for incoming telemetry packets", zap.Error(err))
+	}
+	defer telemetryServer.Close()
+
+	api := api.New(timeSeries)
+	apiServer := http.Server{Addr: apiAddress, Handler: api}
+
 	packets := make(chan telemetry.Packet, 128)
 	go timeSeries.IngestContinously(packets)
 
+	go func() {
+		log.Info("API server starting", zap.String("address", apiAddress))
+		if err := apiServer.ListenAndServe(); err != nil {
+			log.Fatal("Failed to listen for incoming API requets", zap.Error(err))
+		}
+	}()
+
 	for {
-		message, ok := <-server.Messages()
+		message, ok := <-telemetryServer.Messages()
 		if !ok {
 			break
-		}
-
-		// TODO: Data scripts don't seem to support messages > 1024B
-		if len(message.Data) == 1024 {
-			continue
 		}
 
 		// Probably fast enough to do on the "message thread"

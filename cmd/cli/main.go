@@ -43,14 +43,19 @@ func main() {
 	}
 	app.Commands = []*cli.Command{
 		{
-			Name:   "listen",
-			Usage:  "listen for incoming telemetry",
+			Name:   "start",
+			Usage:  "start the telemetry server",
 			Action: ActionServer,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:        "address",
-					Usage:       "address to listen on",
+					Name:        "telemetry-address",
+					Usage:       "address to listen on for incoming UDP telemetry",
 					DefaultText: ":20777",
+				},
+				&cli.StringFlag{
+					Name:        "api-address",
+					Usage:       "address to listen on for incoming API requests",
+					DefaultText: ":8080",
 				},
 				&cli.StringFlag{
 					Name:      "output",
