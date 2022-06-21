@@ -11,7 +11,7 @@ type ErrorResponse struct {
 }
 
 func fail(w http.ResponseWriter, statusCode int, message string) {
-	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(&ErrorResponse{
 		StatusCode: statusCode,
