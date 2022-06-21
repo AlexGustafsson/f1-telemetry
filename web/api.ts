@@ -1,17 +1,48 @@
-import { invoke } from '@tauri-apps/api'
-
-export type ServerStatus = 'NotStarted' | 'Started' | 'Idle' | 'ShuttingDown'
-
-export async function startServer() {
-  await invoke('start_server')
+export interface QueryResult {
+  warnings: any
+  result: Series[]
 }
 
-export async function getServerStatus(): Promise<ServerStatus> {
-  const status = await invoke('server_status')
-  return status as ServerStatus
+export type Point = [number, string]
+
+export interface Series {
+  metrics: Record<string, string>
+  values: Point[]
 }
 
-export async function greet() {
-  const greeting = await invoke('greet', { name: 'world' })
-  console.log(greeting)
+export interface QueryOptions {
+  from?: string
+  to?: string
+  interval?: string
+  maxSamples?: number
+}
+
+export interface ErrorResponse {
+  statusCode: number
+  message: string
+}
+
+export async function performQuery(
+  query: string,
+  options?: QueryOptions
+): Promise<QueryResult> {
+  const response = await fetch('http://localhost:8080/api/v1/query/range', {
+    method: 'POST',
+    body: JSON.stringify({
+      query: query,
+      from: options?.from,
+      to: options?.to,
+      interval: options?.interval,
+      maxSamples: options?.maxSamples,
+    }),
+  })
+
+  const body = await response.json()
+
+  if (response.status !== 200) {
+    const error = body as ErrorResponse
+    throw new Error(error.message)
+  }
+
+  return body as QueryResult
 }
