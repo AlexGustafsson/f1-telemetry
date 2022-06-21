@@ -28,8 +28,38 @@ paths:
 
 components:
   schemas:
+    RangeQuery:
+      type: object
+      required:
+        - query
+        - from
+        - to
+      properties:
+        query:
+          type: string
+          description: PromQL query to execute
+        from:
+          type: string
+          description: Session time at which to start querying data
+          example: 5m10s
+        to:
+          type: string
+          description: Session time at which to stop querying data
+          example: 10m
+        interval:
+          type: string
+          description: Interval between data points
+          example: 1s
+          default: 10ms
+        maxSamples:
+          type: number
+          description: Maximum number of samples to allow the query to return
+          default: 1000
     Series:
       type: object
+      required:
+        - metrics
+        - values
       properties:
         metrics:
           type: object
