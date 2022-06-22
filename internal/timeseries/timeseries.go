@@ -40,6 +40,11 @@ const (
 type TimeSeries struct {
 	Storage *tsdb.DB
 	log     *zap.Logger
+
+	// track per session
+	tracks map[int]string
+	// player names per session, per car
+	playerNames map[int]map[int]string
 }
 
 func New(outputPath string, log *zap.Logger) (*TimeSeries, error) {
@@ -51,8 +56,10 @@ func New(outputPath string, log *zap.Logger) (*TimeSeries, error) {
 	}
 
 	return &TimeSeries{
-		Storage: storage,
-		log:     log,
+		Storage:     storage,
+		log:         log,
+		tracks:      make(map[int]string),
+		playerNames: make(map[int]map[int]string),
 	}, nil
 }
 
@@ -124,6 +131,20 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 			if err := appender.Commit(); err != nil {
 				return err
 			}
+		case f12021.PacketIDSession:
+			message := packet.(*f12021.PacketSession)
+			t.tracks[int(message.SessionUID)] = message.Track.String()
+		case f12021.PacketIDParticipants:
+			message := packet.(*f12021.PacketParticipants)
+			names, ok := t.playerNames[int(message.SessionUID)]
+			if !ok {
+				names = make(map[int]string)
+				t.playerNames[int(message.SessionUID)] = names
+			}
+
+			for car, participant := range message.Participants {
+				names[car] = participant.Name
+			}
 		}
 	default:
 		return fmt.Errorf("unsupported format version")
@@ -133,10 +154,26 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 }
 
 func (t *TimeSeries) add(appender storage.Appender, car int, session uint64, self bool, name string, sampleTime float32, value float64) error {
+	track, ok := t.tracks[int(session)]
+	if !ok {
+		track = "unknown"
+	}
+
+	playerName := "unknown"
+	names, ok := t.playerNames[int(session)]
+	if ok {
+		n, ok := names[car]
+		if ok {
+			playerName = n
+		}
+	}
+
 	labels := labels.FromMap(map[string]string{
 		"session":         strconv.FormatUint(session, 10),
 		"car":             strconv.FormatInt(int64(car), 10),
 		"self":            strconv.FormatBool(self),
+		"track":           track,
+		"player":          playerName,
 		labels.MetricName: name,
 	})
 

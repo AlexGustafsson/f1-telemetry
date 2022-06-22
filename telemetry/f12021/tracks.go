@@ -1,6 +1,6 @@
 package f12021
 
-//go:generate stringer -type=Track
+//go:generate stringer -type=Track -trimprefix=Track
 type Track int8
 
 const (

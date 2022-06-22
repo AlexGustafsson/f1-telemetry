@@ -1,6 +1,6 @@
 package f12021
 
-//go:generate stringer -type=SessionType
+//go:generate stringer -type=SessionType -trimprefix=SessionType
 type SessionType uint8
 
 const (

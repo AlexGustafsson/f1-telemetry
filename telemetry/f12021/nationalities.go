@@ -1,6 +1,6 @@
 package f12021
 
-//go:generate stringer -type=Nationality
+//go:generate stringer -type=Nationality -trimprefix=Nationality
 type Nationality uint8
 
 const (

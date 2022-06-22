@@ -1,6 +1,6 @@
 package f12021
 
-//go:generate stringer -type=Weather
+//go:generate stringer -type=Weather -trimprefix=Weather
 type Weather uint8
 
 const (

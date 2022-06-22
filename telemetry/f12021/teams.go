@@ -1,6 +1,6 @@
 package f12021
 
-//go:generate stringer -type=Team
+//go:generate stringer -type=Team -trimprefix=Team
 type Team uint8
 
 const (

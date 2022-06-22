@@ -1,6 +1,6 @@
 package f12021
 
-//go:generate stringer -type=Driver
+//go:generate stringer -type=Driver -trimprefix=Driver
 type Driver uint8
 
 const DriverNetworkHuman Driver = 255

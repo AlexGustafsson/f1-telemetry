@@ -1,6 +1,6 @@
 package f12021
 
-//go:generate stringer -type=TyreCompound
+//go:generate stringer -type=TyreCompound -trimprefix=TyreCompound
 type TyreCompound uint8
 
 const (
@@ -26,7 +26,7 @@ const (
 	TyreCompoundFormula2Wet       TyreCompound = 15
 )
 
-//go:generate stringer -type=VisualTyreCompound
+//go:generate stringer -type=VisualTyreCompound -trimprefix=VisualTyreCompound
 type VisualTyreCompound uint8
 
 const (
