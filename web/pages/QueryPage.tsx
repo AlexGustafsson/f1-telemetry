@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { QueryResult, performQuery } from '../api'
+import { QueryOptions, QueryResult, performQuery } from '../api'
 
 export default function (): JSX.Element {
   const [queryStartTime, setQueryStartTime] = useState<string>('')
@@ -10,16 +10,39 @@ export default function (): JSX.Element {
   const [query, setQuery] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [result, setResult] = useState<QueryResult | null>(null)
+  const [queries, setQueries] = useState<
+    { query: string; options: QueryOptions }[]
+  >([])
+
+  function fillQuery(query: string, options: QueryOptions) {
+    setQuery(query)
+    setQueryStartTime(options.from || '')
+    setQueryEndTime(options.to || '')
+    setQueryInterval(options.interval || '')
+    setQueryMaxSamples(options.maxSamples ? options.maxSamples.toString() : '')
+  }
+
+  const renderedQueries = queries.map(({ query, options }) => (
+    <tr className="cursor-pointer" onClick={() => fillQuery(query, options)}>
+      <td>{query}</td>
+      <td>{options.from}</td>
+      <td>{options.to}</td>
+      <td>{options.interval}</td>
+      <td>{options.maxSamples}</td>
+    </tr>
+  ))
 
   async function handleQuery() {
     setLoading(true)
+    const options: QueryOptions = {
+      from: queryStartTime,
+      to: queryEndTime,
+      interval: queryInterval,
+      maxSamples: Number(queryMaxSamples),
+    }
+    setQueries((old) => [...old, { query, options }])
     try {
-      const result = await performQuery(query, {
-        from: queryStartTime,
-        to: queryEndTime,
-        interval: queryInterval,
-        maxSamples: Number(queryMaxSamples),
-      })
+      const result = await performQuery(query, options)
       setResult(result)
     } catch (error) {
       alert(error)
@@ -82,6 +105,21 @@ export default function (): JSX.Element {
         <button disabled={loading} onClick={handleQuery}>
           Query
         </button>
+      </div>
+      <div className="card">
+        <h2>Recent Queries</h2>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Query</th>
+              <th scope="col">From</th>
+              <th scope="col">To</th>
+              <th scope="col">Interval</th>
+              <th scope="col">Max samples</th>
+            </tr>
+          </thead>
+          <tbody>{renderedQueries}</tbody>
+        </table>
       </div>
       {result == null ? null : resultCard}
     </div>
