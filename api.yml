@@ -11,10 +11,10 @@ servers:
 paths:
   /query/range:
     post:
-      summary: Perform a range query.
+      summary: Perform a range query
       responses:
-        '200': # status code
-          description: A JSON array of user names
+        '200':
+          description: Query result
           content:
             application/json:
               schema:
@@ -25,6 +25,73 @@ paths:
                     description: All series the query resulted in
                     items:
                       $ref: '#/components/schemas/Series'
+  /labels:
+    get:
+      summary: Retrieve all label names.
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+          required: true
+          description: Session time at which to start retrieving labels
+          example: 0s
+        - in: query
+          name: to
+          schema:
+            type: string
+          required: true
+          description: Session time at which to stop retrieving labels
+          example: 1m10s
+      responses:
+        '200':
+          description: Label names
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  warnings:
+                  labels:
+                    items:
+                      type: string
+  /labels/{name}:
+    get:
+      summary: Retrieve all values for a specific label
+      parameters:
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: Name of the label for which to retreive values
+          example: session
+        - in: query
+          name: from
+          schema:
+            type: string
+          required: true
+          description: Session time at which to start retrieving labels
+          example: 0s
+        - in: query
+          name: to
+          schema:
+            type: string
+          required: true
+          description: Session time at which to stop retrieving labels
+          example: 1m10s
+      responses:
+        '200':
+          description: Label values for the given name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  warnings:
+                  values:
+                    items:
+                      type: string
 
 components:
   schemas:

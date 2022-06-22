@@ -20,6 +20,8 @@ func New(timeSeries *timeseries.TimeSeries) *API {
 	}
 
 	mux.HandleFunc("/api/v1/query/range", api.queryRange)
+	mux.HandleFunc("/api/v1/labels/", api.labelValues)
+	mux.HandleFunc("/api/v1/labels", api.labelNames)
 
 	return api
 }
