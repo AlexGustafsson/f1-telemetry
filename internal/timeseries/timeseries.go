@@ -24,7 +24,7 @@ const (
 	LabelGear     string = "gear"
 	LabelDRS      string = "drs"
 
-	LabelCurrentLap     string = "current_lap"
+	LabelCurrentLap     string = "lap"
 	LabelCurrentLapTime string = "current_lap_time"
 	LabelSector         string = "sector"
 	LabelRacePosition   string = "race_position"

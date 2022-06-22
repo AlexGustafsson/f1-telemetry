@@ -5,7 +5,8 @@
 }
 
 .rv-xy-plot__axis__tick__text {
-  @apply text-base fill-white;
+  /* @apply text-base fill-white; */
+  @apply text-xs text-slate-500;
 }
 
 .rv-xy-plot__axis__line {
@@ -17,17 +18,21 @@
 }
 
 .rv-xy-plot__axis__title text {
-  @apply text-sm text-slate-500;
+  @apply text-xs text-slate-500;
 }
 
 .rv-crosshair {
   @apply !top-0 h-full;
 }
 
-.rv-crosshair__inner {
+/* .rv-crosshair__inner {
   @apply hidden;
-}
+} */
 
 .rv-crosshair__line {
   @apply bg-slate-200 !h-full;
+}
+
+.rv-crosshair__title {
+  @apply hidden;
 }
