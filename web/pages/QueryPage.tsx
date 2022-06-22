@@ -1,6 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { QueryOptions, QueryResult, performQuery } from '../api'
+import {
+  QueryOptions,
+  QueryResult,
+  fetchAllLabelsWithValues,
+  performQuery,
+} from '../api'
 
 export default function (): JSX.Element {
   const [queryStartTime, setQueryStartTime] = useState<string>('')
@@ -13,6 +18,7 @@ export default function (): JSX.Element {
   const [queries, setQueries] = useState<
     { query: string; options: QueryOptions }[]
   >([])
+  const [labels, setLabels] = useState<Record<string, string[]> | null>(null)
 
   function fillQuery(query: string, options: QueryOptions) {
     setQuery(query)
@@ -31,6 +37,10 @@ export default function (): JSX.Element {
       <td>{options.maxSamples}</td>
     </tr>
   ))
+
+  useEffect(() => {
+    fetchAllLabelsWithValues().then(setLabels).catch(console.error)
+  }, [])
 
   async function handleQuery() {
     setLoading(true)
@@ -53,7 +63,7 @@ export default function (): JSX.Element {
   const resultCard = (
     <div className="card">
       <h2>Result</h2>
-      <code className="block">{JSON.stringify(result, null, 2)}</code>
+      <code className="block-code">{JSON.stringify(result, null, 2)}</code>
     </div>
   )
 
@@ -105,6 +115,23 @@ export default function (): JSX.Element {
         <button disabled={loading} onClick={handleQuery} className="mt-2">
           Query
         </button>
+      </div>
+      <div className="card">
+        <h2>Metrics and Labels</h2>
+        {labels
+          ? Object.entries(labels).map(([label, values]) => (
+              <div>
+                <h3>{label === '__name__' ? 'Metrics' : `Label '${label}'`}</h3>
+                <div className="flex flex-row flex-wrap">
+                  {values.map((value) => (
+                    <code className="bg-slate-600 rounded-md p-2 m-2 text-sm">
+                      {value}
+                    </code>
+                  ))}
+                </div>
+              </div>
+            ))
+          : null}
       </div>
       <div className="card">
         <h2>Recent Queries</h2>
