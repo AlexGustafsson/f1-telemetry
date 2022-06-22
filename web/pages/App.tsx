@@ -28,7 +28,7 @@ export default function (): JSX.Element {
               navData.isActive ? 'text-red-500' : 'text-slate-400'
             }
           >
-            <li>
+            <li className="transition-transform active:scale-95 hover:scale-105">
               <HomeIcon className="w-8 h-8" />
             </li>
           </NavLink>
@@ -38,7 +38,7 @@ export default function (): JSX.Element {
               navData.isActive ? 'text-red-500' : 'text-slate-400'
             }
           >
-            <li>
+            <li className="transition-transform active:scale-95 hover:scale-105">
               <ChartIcon className="w-8 h-8" />
             </li>
           </NavLink>
@@ -48,7 +48,7 @@ export default function (): JSX.Element {
               navData.isActive ? 'text-red-500' : 'text-slate-400'
             }
           >
-            <li>
+            <li className="transition-transform active:scale-95 hover:scale-105">
               <CodeIcon className="w-8 h-8" />
             </li>
           </NavLink>
@@ -58,7 +58,7 @@ export default function (): JSX.Element {
               navData.isActive ? 'text-red-500' : 'text-slate-400'
             }
           >
-            <li>
+            <li className="transition-transform active:scale-95 hover:scale-105">
               <SettingsIcon className="w-8 h-8" />
             </li>
           </NavLink>
