@@ -14,7 +14,12 @@ import (
 )
 
 const (
-	LabelSelf string = "self"
+	LabelSelf    string = "self"
+	LabelCar     string = "car"
+	LabelSession string = "session"
+	LabelTrack   string = "track"
+	LabelPlayer  string = "player"
+	LabelGame    string = "game"
 
 	LabelSpeed    string = "speed"
 	LabelThrottle string = "throttle"
@@ -45,6 +50,8 @@ type TimeSeries struct {
 	tracks map[int]string
 	// player names per session, per car
 	playerNames map[int]map[int]string
+	// game version per session
+	games map[int]string
 }
 
 func New(outputPath string, log *zap.Logger) (*TimeSeries, error) {
@@ -60,6 +67,7 @@ func New(outputPath string, log *zap.Logger) (*TimeSeries, error) {
 		log:         log,
 		tracks:      make(map[int]string),
 		playerNames: make(map[int]map[int]string),
+		games:       make(map[int]string),
 	}, nil
 }
 
@@ -134,6 +142,7 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 		case f12021.PacketIDSession:
 			message := packet.(*f12021.PacketSession)
 			t.tracks[int(message.SessionUID)] = message.Track.String()
+			t.games[int(message.SessionUID)] = "F1 2021"
 		case f12021.PacketIDParticipants:
 			message := packet.(*f12021.PacketParticipants)
 			names, ok := t.playerNames[int(message.SessionUID)]
@@ -168,12 +177,18 @@ func (t *TimeSeries) add(appender storage.Appender, car int, session uint64, sel
 		}
 	}
 
+	game, ok := t.games[int(session)]
+	if !ok {
+		game = "unknown"
+	}
+
 	labels := labels.FromMap(map[string]string{
 		"session":         strconv.FormatUint(session, 10),
 		"car":             strconv.FormatInt(int64(car), 10),
 		"self":            strconv.FormatBool(self),
 		"track":           track,
 		"player":          playerName,
+		LabelGame:         game,
 		labels.MetricName: name,
 	})
 
