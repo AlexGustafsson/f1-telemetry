@@ -102,7 +102,7 @@ export default function (): JSX.Element {
             onChange={(e) => setQueryMaxSamples(e.target.value)}
           />
         </label>
-        <button disabled={loading} onClick={handleQuery}>
+        <button disabled={loading} onClick={handleQuery} className="mt-2">
           Query
         </button>
       </div>

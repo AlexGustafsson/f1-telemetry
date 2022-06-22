@@ -268,7 +268,7 @@ export default function (): JSX.Element {
             onChange={(e) => setCar(e.target.value)}
           />
         </label>
-        <button disabled={loading} onClick={graph}>
+        <button disabled={loading} onClick={graph} className="mt-2">
           Graph
         </button>
       </div>
