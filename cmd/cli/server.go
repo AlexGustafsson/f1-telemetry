@@ -6,13 +6,14 @@ import (
 	"github.com/AlexGustafsson/f1-telemetry/internal/api"
 	"github.com/AlexGustafsson/f1-telemetry/internal/server"
 	"github.com/AlexGustafsson/f1-telemetry/internal/timeseries"
+	"github.com/AlexGustafsson/f1-telemetry/internal/util"
 	"github.com/AlexGustafsson/f1-telemetry/telemetry"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )
 
 func ActionServer(ctx *cli.Context) error {
-	log, err := configureLogging(ctx)
+	log, err := util.GetLogger(ctx)
 	if err != nil {
 		return err
 	}
@@ -42,7 +43,7 @@ func ActionServer(ctx *cli.Context) error {
 	}
 	defer telemetryServer.Close()
 
-	api := api.New(timeSeries)
+	api := api.NewServer(timeSeries)
 	apiServer := http.Server{Addr: apiAddress, Handler: api}
 
 	packets := make(chan telemetry.Packet, 128)

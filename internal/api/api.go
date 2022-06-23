@@ -11,7 +11,7 @@ type API struct {
 	timeSeries *timeseries.TimeSeries
 }
 
-func New(timeSeries *timeseries.TimeSeries) *API {
+func NewServer(timeSeries *timeseries.TimeSeries) *API {
 	mux := http.NewServeMux()
 
 	api := &API{
@@ -19,9 +19,9 @@ func New(timeSeries *timeseries.TimeSeries) *API {
 		timeSeries: timeSeries,
 	}
 
-	mux.HandleFunc("/api/v1/query/range", api.queryRange)
-	mux.HandleFunc("/api/v1/labels/", api.labelValues)
-	mux.HandleFunc("/api/v1/labels", api.labelNames)
+	mux.HandleFunc("/query/range", api.queryRange)
+	mux.HandleFunc("/labels/", api.labelValues)
+	mux.HandleFunc("/labels", api.labelNames)
 
 	return api
 }

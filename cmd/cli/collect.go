@@ -5,12 +5,13 @@ import (
 	"net"
 	"os"
 
+	"github.com/AlexGustafsson/f1-telemetry/internal/util"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )
 
 func ActionCollect(ctx *cli.Context) error {
-	log, err := configureLogging(ctx)
+	log, err := util.GetLogger(ctx)
 	if err != nil {
 		return err
 	}

@@ -2,7 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme') // eslint-disable-line 
 
 module.exports = {
   mode: 'jit',
-  content: ['./web/**/*.{html,tsx}'],
+  content: ['./frontend/**/*.{html,tsx}'],
   darkMode: 'media',
   theme: {
     extend: {

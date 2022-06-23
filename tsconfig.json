@@ -15,7 +15,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "newLine": "lf",
-    "outDir": "dist",
+    "outDir": "internal/web/static",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,

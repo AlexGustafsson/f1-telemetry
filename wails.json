@@ -1,0 +1,19 @@
+{
+  "name": "F1 Telemetry",
+  "frontend:install": "yarn install",
+  "frontend:build": "yarn run build",
+  "frontend:dev:watcher": "yarn run dev",
+  "frontend:dev:serverUrl": "http://localhost:3000",
+  "version": "1.0.0",
+  "outputfilename": "f1",
+  "debounceMS": 100,
+  "runNonNativeBuildHooks": false,
+  "info": {
+    "companyName": "axgn",
+    "productName": "F1 Telemetry",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2022",
+    "comments": "A telemetry processor for the official Formula 1 games"
+  },
+  "nsisType": "multiple"
+}

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/AlexGustafsson/f1-telemetry/internal/timeseries"
+	"github.com/AlexGustafsson/f1-telemetry/internal/util"
 	"github.com/prometheus/prometheus/model/timestamp"
 	"github.com/prometheus/prometheus/promql"
 	"github.com/prometheus/prometheus/promql/parser"
@@ -15,7 +16,7 @@ import (
 )
 
 func ActionQuery(ctx *cli.Context) error {
-	log, err := configureLogging(ctx)
+	log, err := util.GetLogger(ctx)
 	if err != nil {
 		return err
 	}

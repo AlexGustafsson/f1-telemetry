@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"github.com/urfave/cli/v2"
@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func configureLogging(ctx *cli.Context) (*zap.Logger, error) {
+func GetLogger(ctx *cli.Context) (*zap.Logger, error) {
 	var logConfig zap.Config
 
 	verbose := ctx.Bool("verbose")

@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/AlexGustafsson/f1-telemetry/internal/util"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )
@@ -18,7 +19,7 @@ type Message struct {
 }
 
 func ActionSend(ctx *cli.Context) error {
-	log, err := configureLogging(ctx)
+	log, err := util.GetLogger(ctx)
 	if err != nil {
 		return err
 	}
