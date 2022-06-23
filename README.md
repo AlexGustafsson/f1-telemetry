@@ -10,6 +10,13 @@ A telemetry processor for the official Formula 1 games.
 
 Work in progress.
 
+### CLI
+
+```shell
+# Start the server with the bundled web UI listening on UDP 127.0.0.1:20777 and TCP 127.0.0.1:20777
+./cli start --output database --web
+```
+
 ## Development
 
 There are some rough guidelines available below for now.
@@ -45,7 +52,7 @@ go build -o cli cmd/cli/*.go
 
 ### APP
 
-The app's entrypoint is `app.go`. It handles parsing CLI flags and arguments and is mostly a wrapper for `internal/app/app.go`.
+The app's entrypoint is `app.go`. It handles parsing CLI flags and arguments and is mostly a wrapper for `internal/app/action.go`.
 
 ```shell
 # Install Wails

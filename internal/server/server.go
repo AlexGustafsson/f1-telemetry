@@ -28,7 +28,7 @@ func (s *Server) ListenAndServe(address string) error {
 		return err
 	}
 
-	buffer := make([]byte, 2048)
+	buffer := make([]byte, 4096)
 	for {
 		select {
 		case <-s.close:

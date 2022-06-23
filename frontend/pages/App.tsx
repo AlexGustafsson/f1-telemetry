@@ -1,17 +1,10 @@
 import { useState } from 'react'
 import { NavLink, Route, Routes, useNavigate } from 'react-router-dom'
 
-import {
-  ChartIcon,
-  CodeIcon,
-  HomeIcon,
-  LeftArrowIcon,
-  SettingsIcon,
-} from '../icons'
+import { ChartIcon, CodeIcon, HomeIcon, LeftArrowIcon } from '../icons'
 import GraphPage from './GraphPage'
 import HomePage from './HomePage'
 import QueryPage from './QueryPage'
-import SettingsPage from './SettingsPage'
 
 export default function (): JSX.Element {
   const [navDepth, setNavDepth] = useState<number>(0)
@@ -52,16 +45,6 @@ export default function (): JSX.Element {
               <CodeIcon className="w-8 h-8" />
             </li>
           </NavLink>
-          <NavLink
-            to="/settings"
-            className={(navData) =>
-              navData.isActive ? 'text-red-500' : 'text-slate-400'
-            }
-          >
-            <li className="transition-transform active:scale-95 hover:scale-105">
-              <SettingsIcon className="w-8 h-8" />
-            </li>
-          </NavLink>
         </ul>
       </menu>
       <main className="pl-24 py-5 pr-4 flex flex-col">
@@ -79,7 +62,6 @@ export default function (): JSX.Element {
           <Route path="/" element={<HomePage />} />
           <Route path="/graphs" element={<GraphPage />} />
           <Route path="/query" element={<QueryPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
     </div>

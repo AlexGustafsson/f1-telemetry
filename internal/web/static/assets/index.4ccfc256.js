@@ -8390,19 +8390,6 @@ reactJsxRuntime_production_min.jsxs = q;
 }
 const jsx = jsxRuntime.exports.jsx;
 const jsxs = jsxRuntime.exports.jsxs;
-function SettingsIcon(props) {
-  return /* @__PURE__ */ jsx("svg", {
-    "aria-hidden": "true",
-    role: "img",
-    preserveAspectRatio: "xMidYMid meet",
-    viewBox: "0 0 24 24",
-    ...props,
-    children: /* @__PURE__ */ jsx("path", {
-      fill: "currentColor",
-      d: "M9.954 2.21a9.99 9.99 0 0 1 4.091-.002A3.993 3.993 0 0 0 16 5.07a3.993 3.993 0 0 0 3.457.261A9.99 9.99 0 0 1 21.5 8.876A3.993 3.993 0 0 0 20 12a3.99 3.99 0 0 0 1.502 3.124a10.043 10.043 0 0 1-2.046 3.543a3.993 3.993 0 0 0-3.456.261a3.993 3.993 0 0 0-1.954 2.86a9.99 9.99 0 0 1-4.091.004A3.993 3.993 0 0 0 8 18.927a3.993 3.993 0 0 0-3.457-.26A9.99 9.99 0 0 1 2.5 15.121A3.993 3.993 0 0 0 4 11.999a3.993 3.993 0 0 0-1.502-3.124a10.043 10.043 0 0 1 2.046-3.543A3.993 3.993 0 0 0 8 5.071a3.993 3.993 0 0 0 1.954-2.86zM12 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6z"
-    })
-  });
-}
 function HomeIcon(props) {
   return /* @__PURE__ */ jsx("svg", {
     "aria-hidden": "true",
@@ -25948,44 +25935,6 @@ function QueryPage() {
     }), result == null ? null : resultCard]
   });
 }
-function SettingsPage() {
-  const [address, setAddress] = react.exports.useState("127.0.0.1");
-  const [port, setPort] = react.exports.useState("20777");
-  const [loading, setLoading] = react.exports.useState(false);
-  function save() {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1e3);
-  }
-  return /* @__PURE__ */ jsxs("div", {
-    children: [/* @__PURE__ */ jsx("h1", {
-      children: "Settings"
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "card",
-      children: [/* @__PURE__ */ jsx("h2", {
-        children: "UDP Telemetry"
-      }), /* @__PURE__ */ jsxs("label", {
-        children: ["Address", /* @__PURE__ */ jsx("input", {
-          type: "text",
-          value: address,
-          onChange: (e) => setAddress(e.target.value)
-        })]
-      }), /* @__PURE__ */ jsxs("label", {
-        children: ["Port", /* @__PURE__ */ jsx("input", {
-          type: "number",
-          value: port,
-          onChange: (e) => setPort(e.target.value)
-        })]
-      }), /* @__PURE__ */ jsx("button", {
-        disabled: loading,
-        onClick: save,
-        className: "mt-2",
-        children: "Save"
-      })]
-    })]
-  });
-}
 function App() {
   const [navDepth, setNavDepth] = react.exports.useState(0);
   const navigate = useNavigate();
@@ -26022,15 +25971,6 @@ function App() {
               className: "w-8 h-8"
             })
           })
-        }), /* @__PURE__ */ jsx(NavLink, {
-          to: "/settings",
-          className: (navData) => navData.isActive ? "text-red-500" : "text-slate-400",
-          children: /* @__PURE__ */ jsx("li", {
-            className: "transition-transform active:scale-95 hover:scale-105",
-            children: /* @__PURE__ */ jsx(SettingsIcon, {
-              className: "w-8 h-8"
-            })
-          })
         })]
       })
     }), /* @__PURE__ */ jsxs("main", {
@@ -26054,9 +25994,6 @@ function App() {
         }), /* @__PURE__ */ jsx(Route, {
           path: "/query",
           element: /* @__PURE__ */ jsx(QueryPage, {})
-        }), /* @__PURE__ */ jsx(Route, {
-          path: "/settings",
-          element: /* @__PURE__ */ jsx(SettingsPage, {})
         })]
       })]
     })]
@@ -26070,4 +26007,4 @@ if (root) {
     })
   }));
 }
-//# sourceMappingURL=index.aca7a115.js.map
+//# sourceMappingURL=index.4ccfc256.js.map

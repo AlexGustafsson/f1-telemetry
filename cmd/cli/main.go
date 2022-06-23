@@ -57,7 +57,12 @@ func main() {
 				&cli.StringFlag{
 					Name:        "api-address",
 					Usage:       "address to listen on for incoming API requests",
-					DefaultText: ":8080",
+					DefaultText: ":20777",
+				},
+				&cli.BoolFlag{
+					Name:        "web",
+					Usage:       "serve the web UI",
+					DefaultText: "false",
 				},
 				&cli.StringFlag{
 					Name:      "output",

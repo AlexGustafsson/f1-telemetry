@@ -26,8 +26,10 @@ func ActionServer(ctx *cli.Context) error {
 
 	apiAddress := ctx.String("api-address")
 	if apiAddress == "" {
-		apiAddress = "0.0.0.0:8080"
+		apiAddress = "0.0.0.0:20777"
 	}
+
+	serveWeb := ctx.Bool("web")
 
 	outputPath := ctx.String("output")
 
@@ -39,16 +41,18 @@ func ActionServer(ctx *cli.Context) error {
 
 	telemetryServer := server.New()
 
-	webServer, err := web.NewServer()
-	if err != nil {
-		log.Fatal("Failed to get web application resources", zap.Error(err))
-	}
-
 	apiServer := api.NewServer(timeSeries)
 
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/", apiServer)
-	mux.Handle("/", webServer)
+
+	if serveWeb {
+		webServer, err := web.NewServer()
+		if err != nil {
+			log.Fatal("Failed to get web application resources", zap.Error(err))
+		}
+		mux.Handle("/", webServer)
+	}
 
 	server := http.Server{Addr: apiAddress, Handler: mux}
 
