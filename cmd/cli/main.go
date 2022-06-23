@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	f1cli "github.com/AlexGustafsson/f1-telemetry/internal/cli"
+
 	"github.com/urfave/cli/v2"
 )
 
@@ -45,7 +47,7 @@ func main() {
 		{
 			Name:   "start",
 			Usage:  "start the telemetry server",
-			Action: ActionServer,
+			Action: f1cli.ActionServer,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:        "telemetry-address",
@@ -69,7 +71,7 @@ func main() {
 		{
 			Name:   "collect",
 			Usage:  "collect telemetry",
-			Action: ActionCollect,
+			Action: f1cli.ActionCollect,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:        "address",
@@ -88,7 +90,7 @@ func main() {
 		{
 			Name:   "send",
 			Usage:  "send telemetry from a collected file",
-			Action: ActionSend,
+			Action: f1cli.ActionSend,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:        "address",
@@ -112,7 +114,7 @@ func main() {
 		{
 			Name:   "query",
 			Usage:  "query collected telemetry",
-			Action: ActionQuery,
+			Action: f1cli.ActionQuery,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:      "input",
@@ -159,7 +161,7 @@ func main() {
 				{
 					Name:   "ingest",
 					Usage:  "ingest a collected file into the time series database",
-					Action: ActionDatabaseIngest,
+					Action: f1cli.ActionDatabaseIngest,
 					Flags: []cli.Flag{
 						&cli.StringFlag{
 							Name:      "input",

@@ -36,7 +36,7 @@ yarn run build
 ### CLI
 
 The CLI's entrypoint is `cmd/cli/main.go`. It handles parsing CLI flags and arguments and invokes one
-of the supported _actions_ found in the other files in `cmd/cli`.
+of the supported _actions_ found in `internal/cli`.
 
 ```shell
 # Build the CLI
@@ -45,7 +45,7 @@ go build -o cli cmd/cli/*.go
 
 ### APP
 
-The app's entrypoint is `app.go`. It's mostly a wrapper to `internal/app/app.go`.
+The app's entrypoint is `app.go`. It handles parsing CLI flags and arguments and is mostly a wrapper for `internal/app/app.go`.
 
 ```shell
 # Install Wails
