@@ -54,6 +54,9 @@ go install github.com/wailsapp/wails/v2/cmd/wails@latest
 # Run Wails in dev mode
 wails dev
 
+# Build the app in debug mode (includes DevTools accessible via right click)
+wails build -debug
+
 # Build the app
 wails build
 ```

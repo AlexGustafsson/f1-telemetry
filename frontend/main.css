@@ -13,6 +13,7 @@
 
   body {
     touch-actions: none;
+    overscroll-behavior: none;
   }
 
   input:focus,

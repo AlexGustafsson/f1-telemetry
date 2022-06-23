@@ -11,46 +11,47 @@ type Message struct {
 }
 
 type Server struct {
-	socket   net.PacketConn
 	messages chan Message
+	close    chan struct{}
 }
 
-func Listen(address string) (*Server, error) {
+func New() *Server {
+	return &Server{
+		messages: make(chan Message, 128),
+		close:    make(chan struct{}),
+	}
+}
+
+func (s *Server) ListenAndServe(address string) error {
 	socket, err := net.ListenPacket("udp", address)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	server := &Server{
-		socket:   socket,
-		messages: make(chan Message),
+	buffer := make([]byte, 2048)
+	for {
+		select {
+		case <-s.close:
+			return nil
+		default:
+			n, peer, err := socket.ReadFrom(buffer)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			data := make([]byte, n)
+			copy(data, buffer[:n])
+
+			s.messages <- Message{data, peer}
+		}
 	}
-
-	go server.handle()
-
-	return server, nil
 }
 
 func (s *Server) Messages() chan Message {
 	return s.messages
 }
 
-func (s *Server) Close() error {
-	return s.socket.Close()
-}
-
-func (s *Server) handle() {
-	buffer := make([]byte, 2048)
-	for {
-		n, peer, err := s.socket.ReadFrom(buffer)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		data := make([]byte, n)
-		copy(data, buffer[:n])
-
-		s.messages <- Message{data, peer}
-	}
+func (s *Server) Close() {
+	close(s.close)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/AlexGustafsson/f1-telemetry/internal/server"
 	"github.com/AlexGustafsson/f1-telemetry/internal/timeseries"
 	"github.com/AlexGustafsson/f1-telemetry/internal/util"
+	"github.com/AlexGustafsson/f1-telemetry/internal/web"
 	"github.com/AlexGustafsson/f1-telemetry/telemetry"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
@@ -36,23 +37,35 @@ func ActionServer(ctx *cli.Context) error {
 	}
 	defer timeSeries.Close()
 
-	log.Info("Telemetry server starting", zap.String("address", telemetryAddress))
-	telemetryServer, err := server.Listen(telemetryAddress)
-	if err != nil {
-		log.Fatal("Failed to listen for incoming telemetry packets", zap.Error(err))
-	}
-	defer telemetryServer.Close()
+	telemetryServer := server.New()
 
-	api := api.NewServer(timeSeries)
-	apiServer := http.Server{Addr: apiAddress, Handler: api}
+	webServer, err := web.NewServer()
+	if err != nil {
+		log.Fatal("Failed to get web application resources", zap.Error(err))
+	}
+
+	apiServer := api.NewServer(timeSeries)
+
+	mux := http.NewServeMux()
+	mux.Handle("/api/v1/", apiServer)
+	mux.Handle("/", webServer)
+
+	server := http.Server{Addr: apiAddress, Handler: mux}
 
 	packets := make(chan telemetry.Packet, 128)
 	go timeSeries.IngestContinously(packets)
 
 	go func() {
-		log.Info("API server starting", zap.String("address", apiAddress))
-		if err := apiServer.ListenAndServe(); err != nil {
-			log.Fatal("Failed to listen for incoming API requets", zap.Error(err))
+		log.Info("HTTP server starting", zap.String("address", apiAddress))
+		if err := server.ListenAndServe(); err != nil {
+			log.Fatal("Failed to listen for incoming API requests", zap.Error(err))
+		}
+	}()
+
+	go func() {
+		log.Info("Telemetry server starting", zap.String("address", telemetryAddress))
+		if err := telemetryServer.ListenAndServe(telemetryAddress); err != nil {
+			log.Fatal("Failed to listen for incoming telemetry packets", zap.Error(err))
 		}
 	}()
 

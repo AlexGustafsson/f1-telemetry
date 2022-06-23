@@ -36,7 +36,7 @@ export async function performQuery(
   query: string,
   options?: QueryOptions
 ): Promise<QueryResult> {
-  const response = await fetch('http://localhost:8080/api/v1/query/range', {
+  const response = await fetch('http://localhost:20777/api/v1/query/range', {
     method: 'POST',
     body: JSON.stringify({
       query: query,
@@ -65,7 +65,7 @@ export async function fetchLabels(
   query.set('from', from)
   query.set('to', to)
   const response = await fetch(
-    `http://localhost:8080/api/v1/labels?${query.toString()}`,
+    `http://localhost:20777/api/v1/labels?${query.toString()}`,
     {
       method: 'GET',
     }
@@ -90,7 +90,7 @@ export async function fetchLabelValues(
   query.set('from', from)
   query.set('to', to)
   const response = await fetch(
-    `http://localhost:8080/api/v1/labels/${encodeURIComponent(
+    `http://localhost:20777/api/v1/labels/${encodeURIComponent(
       label
     )}?${query.toString()}`,
     {

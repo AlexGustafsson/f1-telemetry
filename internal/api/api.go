@@ -19,9 +19,9 @@ func NewServer(timeSeries *timeseries.TimeSeries) *API {
 		timeSeries: timeSeries,
 	}
 
-	mux.HandleFunc("/query/range", api.queryRange)
-	mux.HandleFunc("/labels/", api.labelValues)
-	mux.HandleFunc("/labels", api.labelNames)
+	mux.HandleFunc("/api/v1/query/range", api.queryRange)
+	mux.HandleFunc("/api/v1/labels/", api.labelValues)
+	mux.HandleFunc("/api/v1/labels", api.labelNames)
 
 	return api
 }
