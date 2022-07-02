@@ -4,7 +4,16 @@ A telemetry processor for the official Formula 1 games.
 
 ## Features and Use Cases
 
-![Example graph](./assets/graph.png)
+<p align="center">
+  <img src="assets/graph.png" alt="Example graph">
+</p>
+
+* Cross platform
+* Use as a CLI, via the embedded web UI or as a standalone application
+* Stores data as Prometheus-compatible time series
+* Query data using embedded PromQL
+* Fast and resource efficient
+* Effortlessly produce telemetry graphs modeled after real-world teams' graphs
 
 ## Usage
 
