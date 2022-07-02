@@ -8,18 +8,24 @@ import (
 	"github.com/AlexGustafsson/f1-telemetry/telemetry"
 	"github.com/AlexGustafsson/f1-telemetry/telemetry/f12021"
 	"github.com/prometheus/prometheus/model/labels"
+	promlabels "github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/storage"
 	"github.com/prometheus/prometheus/tsdb"
 	"go.uber.org/zap"
 )
 
 const (
-	LabelSelf    string = "self"
-	LabelCar     string = "car"
-	LabelSession string = "session"
-	LabelTrack   string = "track"
-	LabelPlayer  string = "player"
-	LabelGame    string = "game"
+	LabelSelf        string = "self"
+	LabelCar         string = "car"
+	LabelSession     string = "session"
+	LabelTrack       string = "track"
+	LabelPlayer      string = "player"
+	LabelGame        string = "game"
+	LabelSessionType string = "session_type"
+	LabelDriver      string = "driver"
+	LabelPlayerIsAI  string = "is_ai"
+	LabelCarNumber   string = "race_number"
+	LabelTeam        string = "team"
 
 	LabelSpeed    string = "speed"
 	LabelThrottle string = "throttle"
@@ -42,16 +48,27 @@ const (
 	LabelTyreAge            string = "tyre_age"
 )
 
+type Player struct {
+	Name      string
+	IsAI      bool
+	CarNumber int
+	Driver    string
+	Team      string
+}
+
+type Session struct {
+	Game  string
+	Track string
+	Type  string
+}
+
 type TimeSeries struct {
 	Storage *tsdb.DB
 	log     *zap.Logger
 
-	// track per session
-	tracks map[int]string
-	// player names per session, per car
-	playerNames map[int]map[int]string
-	// game version per session
-	games map[int]string
+	sessions map[int]Session
+	// players per session, per car index
+	players map[int]map[int]Player
 }
 
 func New(outputPath string, log *zap.Logger) (*TimeSeries, error) {
@@ -63,11 +80,10 @@ func New(outputPath string, log *zap.Logger) (*TimeSeries, error) {
 	}
 
 	return &TimeSeries{
-		Storage:     storage,
-		log:         log,
-		tracks:      make(map[int]string),
-		playerNames: make(map[int]map[int]string),
-		games:       make(map[int]string),
+		Storage:  storage,
+		log:      log,
+		sessions: make(map[int]Session),
+		players:  make(map[int]map[int]Player),
 	}, nil
 }
 
@@ -141,18 +157,27 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 			}
 		case f12021.PacketIDSession:
 			message := packet.(*f12021.PacketSession)
-			t.tracks[int(message.SessionUID)] = message.Track.String()
-			t.games[int(message.SessionUID)] = "F1 2021"
+			t.sessions[int(message.SessionUID)] = Session{
+				Track: message.Track.String(),
+				Game:  "F1 2021",
+				Type:  message.SessionType.String(),
+			}
 		case f12021.PacketIDParticipants:
 			message := packet.(*f12021.PacketParticipants)
-			names, ok := t.playerNames[int(message.SessionUID)]
+			players, ok := t.players[int(message.SessionUID)]
 			if !ok {
-				names = make(map[int]string)
-				t.playerNames[int(message.SessionUID)] = names
+				players = make(map[int]Player)
+				t.players[int(message.SessionUID)] = players
 			}
 
 			for car, participant := range message.Participants {
-				names[car] = participant.Name
+				players[car] = Player{
+					Name:      participant.Name,
+					IsAI:      participant.IsAIControlled,
+					CarNumber: int(participant.RaceNumber),
+					Driver:    participant.Driver.String(),
+					Team:      participant.Team.String(),
+				}
 			}
 		}
 	default:
@@ -163,35 +188,32 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 }
 
 func (t *TimeSeries) add(appender storage.Appender, car int, session uint64, self bool, name string, sampleTime float32, value float64) error {
-	track, ok := t.tracks[int(session)]
-	if !ok {
-		track = "unknown"
+	labels := map[string]string{
+		LabelSession:      strconv.FormatUint(session, 10),
+		LabelCar:          strconv.FormatInt(int64(car), 10),
+		LabelSelf:         strconv.FormatBool(self),
+		labels.MetricName: name,
 	}
 
-	playerName := "unknown"
-	names, ok := t.playerNames[int(session)]
+	players, ok := t.players[int(session)]
 	if ok {
-		n, ok := names[car]
+		n, ok := players[car]
 		if ok {
-			playerName = n
+			labels[LabelPlayer] = n.Name
+			labels[LabelDriver] = n.Driver
+			labels[LabelCarNumber] = strconv.FormatInt(int64(n.CarNumber), 10)
+			labels[LabelPlayerIsAI] = strconv.FormatBool(n.IsAI)
+			labels[LabelTeam] = n.Team
 		}
 	}
 
-	game, ok := t.games[int(session)]
-	if !ok {
-		game = "unknown"
+	sessionv, ok := t.sessions[int(session)]
+	if ok {
+		labels[LabelGame] = sessionv.Game
+		labels[LabelSessionType] = sessionv.Type
+		labels[LabelTrack] = sessionv.Track
 	}
 
-	labels := labels.FromMap(map[string]string{
-		"session":         strconv.FormatUint(session, 10),
-		"car":             strconv.FormatInt(int64(car), 10),
-		"self":            strconv.FormatBool(self),
-		"track":           track,
-		"player":          playerName,
-		LabelGame:         game,
-		labels.MetricName: name,
-	})
-
-	_, err := appender.Append(0, labels, int64(sampleTime*1000), value)
+	_, err := appender.Append(0, promlabels.FromMap(labels), int64(sampleTime*1000), value)
 	return err
 }

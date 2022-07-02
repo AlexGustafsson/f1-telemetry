@@ -4,11 +4,11 @@ type PacketParticipants struct {
 	PacketHeader `nested:"true"`
 	ActiveCars   uint8
 	Participants [22]struct {
-		IsAIControlled uint8 // TODO: Bool not working?
+		IsAIControlled bool
 		Driver         Driver
 		NetworkID      uint8
 		Team           Team
-		IsMyTeam       bool // TODO: Bool not working?
+		IsMyTeam       bool
 		RaceNumber     uint8
 		Nationality    Nationality
 		Name           string `length:"48"`

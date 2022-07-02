@@ -9,7 +9,7 @@ const (
 	TeamRedBullRacing
 	TeamWilliams
 	TeamAstonMartin
-	TeamAlipne
+	TeamAlpine
 	TeamAlphaTauri
 	TeamHaas
 	TeamMcLaren
@@ -55,3 +55,5 @@ const (
 	TeamMcLaren2020
 	TeamAlfaRomeo2020
 )
+
+const TeamNoTeam Team = 255

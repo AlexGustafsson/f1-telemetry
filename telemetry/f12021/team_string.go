@@ -13,7 +13,7 @@ func _() {
 	_ = x[TeamRedBullRacing-2]
 	_ = x[TeamWilliams-3]
 	_ = x[TeamAstonMartin-4]
-	_ = x[TeamAlipne-5]
+	_ = x[TeamAlpine-5]
 	_ = x[TeamAlphaTauri-6]
 	_ = x[TeamHaas-7]
 	_ = x[TeamMcLaren-8]
@@ -49,13 +49,15 @@ func _() {
 	_ = x[TeamHaas2020-92]
 	_ = x[TeamMcLaren2020-93]
 	_ = x[TeamAlfaRomeo2020-94]
+	_ = x[TeamNoTeam-255]
 }
 
 const (
-	_Team_name_0 = "MercedesFerrariRedBullRacingWilliamsAstonMartinAlipneAlphaTauriHaasMcLarenAlfaRomeo"
+	_Team_name_0 = "MercedesFerrariRedBullRacingWilliamsAstonMartinAlpineAlphaTauriHaasMcLarenAlfaRomeo"
 	_Team_name_1 = "ArtGP2019Campos2019TreamCarlin2019SauberJuniorCharouz2019Dams2019UniVirtuosi2019MPMotorsport2019Prema2019Trident2019Arden2019"
 	_Team_name_2 = "ArtGP2020Campos2020TreamCarlin2020Charouz2020Dams2020UniVirtuosi2020MPMotorsport2020Prema2020Trident2020BWT2020Hitech2020"
 	_Team_name_3 = "Mercedes2020Ferrari2020RedBull2020Williams2020RacingPoint2020Renault2020AlphaTauri2020Haas2020McLaren2020AlfaRomeo2020"
+	_Team_name_4 = "NoTeam"
 )
 
 var (
@@ -78,6 +80,8 @@ func (i Team) String() string {
 	case 85 <= i && i <= 94:
 		i -= 85
 		return _Team_name_3[_Team_index_3[i]:_Team_index_3[i+1]]
+	case i == 255:
+		return _Team_name_4
 	default:
 		return "Team(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
