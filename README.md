@@ -67,3 +67,7 @@ wails build -debug
 # Build the app
 wails build
 ```
+
+## Known issues
+
+* It seems as if F1 always give players the name "Player" in races, which makes it difficult to identify the car a certain player drove.
