@@ -26,7 +26,7 @@ export default function (): JSX.Element {
             </li>
           </NavLink>
           <NavLink
-            to="/graphs"
+            to="/graph"
             className={(navData) =>
               navData.isActive ? 'text-red-500' : 'text-slate-400'
             }
@@ -60,7 +60,7 @@ export default function (): JSX.Element {
         </header>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/graphs" element={<GraphPage />} />
+          <Route path="/graph" element={<GraphPage />} />
           <Route path="/query" element={<QueryPage />} />
         </Routes>
       </main>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { LineSeriesPoint, RVNearestXEventHandler } from 'react-vis'
 import {
   ChartLabel,
   Crosshair,
@@ -9,9 +10,9 @@ import {
   YAxis,
   makeWidthFlexible,
 } from 'react-vis'
-import type { LineSeriesPoint, RVNearestXEventHandler } from 'react-vis'
 
 import { QueryOptions, Series, performQuery } from '../api'
+import Tip from '../controls/Tip'
 import '../graphs.css'
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot)
@@ -389,6 +390,13 @@ export default function (): JSX.Element {
   return (
     <div>
       <h1>Graph</h1>
+      <Tip>
+        <p>
+          This page allows you to produce a telemetry graph, modeled after a
+          real world example. To produce a graph, simply specify a session and
+          car. The values can be found in the queries page.
+        </p>
+      </Tip>
       <div className="card">
         <h2>Configuration</h2>
         <label>

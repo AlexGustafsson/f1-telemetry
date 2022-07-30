@@ -73,6 +73,10 @@
   td {
     @apply px-2 py-4
   }
+
+  a {
+    @apply text-red-500;
+  }
 }
 
 @layer components {

@@ -6,6 +6,7 @@ import {
   fetchAllLabelsWithValues,
   performQuery,
 } from '../api'
+import Tip from '../controls/Tip'
 
 export default function (): JSX.Element {
   const [queryStartTime, setQueryStartTime] = useState<string>('')
@@ -67,13 +68,33 @@ export default function (): JSX.Element {
     </div>
   )
 
+  const example = `sum(avg_over_time(speed{self="true"}[1m])) by (session)`
+
   return (
     <div>
       <h1>Query</h1>
+      <Tip>
+        <p>
+          You can query any collected data using{' '}
+          <a
+            target="_blank"
+            href="https://prometheus.io/docs/prometheus/latest/querying/basics/"
+          >
+            PromQL
+          </a>
+          . For example, to see average speed of your car the first minute of
+          sessions, specify the <code>{example}</code> query, using{' '}
+          <code>0s</code> as from, <code>1m</code> as the to and interval and
+          finally <code>10000</code> as the max samples, before pressing the
+          query button. The metrics below describe all available metrics you can
+          use in a query. Likewise, the labels describe all available labels as
+          well as their respective values.
+        </p>
+      </Tip>
       <div className="card">
         <h2>Query data</h2>
         <label>
-          Query
+          <p>PromQL query</p>
           <input
             type="text"
             value={query}
@@ -81,7 +102,9 @@ export default function (): JSX.Element {
           />
         </label>
         <label>
-          From
+          <p>
+            Start time for the query, for example <code>10m2s</code>
+          </p>
           <input
             type="text"
             value={queryStartTime}
@@ -89,7 +112,9 @@ export default function (): JSX.Element {
           />
         </label>
         <label>
-          To
+          <p>
+            End time for the query, for example <code>15m</code>
+          </p>
           <input
             type="text"
             value={queryEndTime}
@@ -97,7 +122,7 @@ export default function (): JSX.Element {
           />
         </label>
         <label>
-          Interval
+          <p>Interval</p>
           <input
             type="text"
             value={queryInterval}
@@ -105,7 +130,7 @@ export default function (): JSX.Element {
           />
         </label>
         <label>
-          Max samples
+          <p>Max samples</p>
           <input
             type="text"
             value={queryMaxSamples}
@@ -133,21 +158,23 @@ export default function (): JSX.Element {
             ))
           : null}
       </div>
-      <div className="card">
-        <h2>Recent Queries</h2>
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Query</th>
-              <th scope="col">From</th>
-              <th scope="col">To</th>
-              <th scope="col">Interval</th>
-              <th scope="col">Max samples</th>
-            </tr>
-          </thead>
-          <tbody>{renderedQueries}</tbody>
-        </table>
-      </div>
+      {renderedQueries.length > 0 ? (
+        <div className="card">
+          <h2>Recent Queries</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Query</th>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col">Interval</th>
+                <th scope="col">Max samples</th>
+              </tr>
+            </thead>
+            <tbody>{renderedQueries}</tbody>
+          </table>
+        </div>
+      ) : null}
       {result == null ? null : resultCard}
     </div>
   )
