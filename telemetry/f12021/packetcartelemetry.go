@@ -56,7 +56,7 @@ type PacketCarTelemetry struct {
 			FrontLeft  float32
 			FrontRight float32
 		} `nested:"true"`
-		SurfacyType struct {
+		SurfaceType struct {
 			RearLeft   SurfaceType
 			RearRight  SurfaceType
 			FrontLeft  SurfaceType
