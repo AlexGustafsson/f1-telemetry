@@ -7,7 +7,6 @@ import (
 
 	"github.com/AlexGustafsson/f1-telemetry/telemetry"
 	"github.com/AlexGustafsson/f1-telemetry/telemetry/f12021"
-	"github.com/prometheus/prometheus/model/labels"
 	promlabels "github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/storage"
 	"github.com/prometheus/prometheus/tsdb"
@@ -191,10 +190,10 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 
 func (t *TimeSeries) add(appender storage.Appender, car int, session uint64, self bool, name string, sampleTime float32, value float64) error {
 	labels := map[string]string{
-		LabelSession:      strconv.FormatUint(session, 10),
-		LabelCar:          strconv.FormatInt(int64(car), 10),
-		LabelSelf:         strconv.FormatBool(self),
-		labels.MetricName: name,
+		LabelSession:          strconv.FormatUint(session, 10),
+		LabelCar:              strconv.FormatInt(int64(car), 10),
+		LabelSelf:             strconv.FormatBool(self),
+		promlabels.MetricName: name,
 	}
 
 	players, ok := t.players[int(session)]
