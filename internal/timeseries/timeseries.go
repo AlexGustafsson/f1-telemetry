@@ -47,6 +47,9 @@ const (
 	MetricActualTyreCompound string = "actual_tyre_compound"
 	MetricVisualTyreCompound string = "visual_tyre_compound"
 	MetricTyreAge            string = "tyre_age"
+
+	MetricWorldPositionX string = "world_x"
+	MetricWorldPositionY string = "world_y"
 )
 
 type Player struct {
@@ -179,6 +182,18 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 					Driver:    participant.Driver.String(),
 					Team:      participant.Team.String(),
 				}
+			}
+		case f12021.PacketIDMotion:
+			message := packet.(*f12021.PacketMotion)
+			appender := t.Storage.Appender(context.Background())
+
+			for car, telemetry := range message.Cars {
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), MetricWorldPositionX, message.SessionTime, float64(telemetry.WorldPositionX))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), MetricWorldPositionY, message.SessionTime, float64(telemetry.WorldPositionY))
+			}
+
+			if err := appender.Commit(); err != nil {
+				return err
 			}
 		}
 	default:
