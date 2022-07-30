@@ -50,6 +50,7 @@ const (
 
 	MetricWorldPositionX string = "world_x"
 	MetricWorldPositionY string = "world_y"
+	MetricWorldPositionZ string = "world_z"
 )
 
 type Player struct {
@@ -190,6 +191,7 @@ func (t *TimeSeries) Ingest(packet telemetry.Packet) error {
 			for car, telemetry := range message.Cars {
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), MetricWorldPositionX, message.SessionTime, float64(telemetry.WorldPositionX))
 				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), MetricWorldPositionY, message.SessionTime, float64(telemetry.WorldPositionY))
+				t.add(appender, car, packet.Session(), car == int(message.PlayerCarIndex), MetricWorldPositionZ, message.SessionTime, float64(telemetry.WorldPositionZ))
 			}
 
 			if err := appender.Commit(); err != nil {
