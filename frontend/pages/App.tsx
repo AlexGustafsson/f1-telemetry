@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { NavLink, Route, Routes, useNavigate } from 'react-router-dom'
 
-import { ChartIcon, CodeIcon, HomeIcon, LeftArrowIcon } from '../icons'
+import { ChartIcon, CodeIcon, HomeIcon, LeftArrowIcon, MapIcon } from '../icons'
 import GraphPage from './GraphPage'
 import HomePage from './HomePage'
+import MapPage from './MapPage'
 import QueryPage from './QueryPage'
 
 export default function (): JSX.Element {
@@ -36,6 +37,16 @@ export default function (): JSX.Element {
             </li>
           </NavLink>
           <NavLink
+            to="/map"
+            className={(navData) =>
+              navData.isActive ? 'text-red-500' : 'text-slate-400'
+            }
+          >
+            <li className="transition-transform active:scale-95 hover:scale-105">
+              <MapIcon className="w-8 h-8" />
+            </li>
+          </NavLink>
+          <NavLink
             to="/query"
             className={(navData) =>
               navData.isActive ? 'text-red-500' : 'text-slate-400'
@@ -61,6 +72,7 @@ export default function (): JSX.Element {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/graph" element={<GraphPage />} />
+          <Route path="/map" element={<MapPage />} />
           <Route path="/query" element={<QueryPage />} />
         </Routes>
       </main>

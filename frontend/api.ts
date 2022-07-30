@@ -130,6 +130,15 @@ export async function fetchAllLabelsWithValues(): Promise<
   return result
 }
 
+export function convertSeriesToPoints(
+  series: Series[]
+): Record<number, number> {
+  return series[0].values.reduce(
+    (points, [x, y]) => ({ ...points, [x]: Number(y) }),
+    {}
+  )
+}
+
 window.api = {
   performQuery,
   fetchLabels,

@@ -11,19 +11,11 @@ import {
   makeWidthFlexible,
 } from 'react-vis'
 
-import { QueryOptions, Series, performQuery } from '../api'
+import { QueryOptions, convertSeriesToPoints, performQuery } from '../api'
 import Tip from '../controls/Tip'
 import '../graphs.css'
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot)
-
-function convertSeriesToPoints(series: Series[]): Record<number, number> {
-  console.log(series[0].values[0])
-  return series[0].values.reduce(
-    (points, [x, y]) => ({ ...points, [x]: Number(y) }),
-    {}
-  )
-}
 
 async function findSectors(
   car: string,
