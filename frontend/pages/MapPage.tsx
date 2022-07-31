@@ -1,6 +1,11 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { QueryOptions, convertSeriesToPoints, performQuery } from '../api'
+import {
+  QueryOptions,
+  convertSeriesToPoints,
+  fetchLabelValues,
+  performQuery,
+} from '../api'
 import Tip from '../controls/Tip'
 
 function normalize(
@@ -18,11 +23,22 @@ function normalize(
 export default function (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [showMap, setShowMap] = useState<boolean>(false)
+  const [sessions, setSessions] = useState<string[]>([])
 
   const canvasElement = useRef<HTMLCanvasElement>(null)
 
   const [session, setSession] = useState<string>('')
   const [car, setCar] = useState<string>('')
+
+  // Fetch available sessions
+  useEffect(() => {
+    // Assume every session has some data the first 10 minutes
+    fetchLabelValues('session', '0s', '10m')
+      .then((data) => {
+        setSessions(data.values)
+      })
+      .catch(console.error)
+  }, [])
 
   async function map() {
     setLoading(true)
@@ -124,6 +140,12 @@ export default function (): JSX.Element {
     <canvas width="320" height="320" ref={canvasElement}></canvas>
   )
 
+  const sessionOptions = sessions.map((x) => (
+    <option key={x} value={x}>
+      {x}
+    </option>
+  ))
+
   return (
     <div>
       <h1>Map</h1>
@@ -142,7 +164,9 @@ export default function (): JSX.Element {
             type="text"
             value={session}
             onChange={(e) => setSession(e.target.value)}
+            list="session"
           />
+          <datalist id="session">{sessionOptions}</datalist>
         </label>
         <label>
           Car

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { LineSeriesPoint, RVNearestXEventHandler } from 'react-vis'
 import {
   ChartLabel,
@@ -11,7 +11,12 @@ import {
   makeWidthFlexible,
 } from 'react-vis'
 
-import { QueryOptions, convertSeriesToPoints, performQuery } from '../api'
+import {
+  QueryOptions,
+  convertSeriesToPoints,
+  fetchLabelValues,
+  performQuery,
+} from '../api'
 import Tip from '../controls/Tip'
 import '../graphs.css'
 
@@ -61,6 +66,7 @@ export default function (): JSX.Element {
   const [crosshairX, setCrosshairX] = useState<number>(-1)
   const [loading, setLoading] = useState<boolean>(false)
   const [showGraph, setShowGraph] = useState<boolean>(false)
+  const [sessions, setSessions] = useState<string[]>([])
 
   const [session, setSession] = useState<string>('')
   const [car, setCar] = useState<string>('')
@@ -82,6 +88,16 @@ export default function (): JSX.Element {
   function mouseLeave() {
     setCrosshairX(-1)
   }
+
+  // Fetch available sessions
+  useEffect(() => {
+    // Assume every session has some data the first 10 minutes
+    fetchLabelValues('session', '0s', '10m')
+      .then((data) => {
+        setSessions(data.values)
+      })
+      .catch(console.error)
+  }, [])
 
   async function graph() {
     setLoading(true)
@@ -379,6 +395,12 @@ export default function (): JSX.Element {
     </div>
   )
 
+  const sessionOptions = sessions.map((x) => (
+    <option key={x} value={x}>
+      {x}
+    </option>
+  ))
+
   return (
     <div>
       <h1>Graph</h1>
@@ -397,7 +419,9 @@ export default function (): JSX.Element {
             type="text"
             value={session}
             onChange={(e) => setSession(e.target.value)}
+            list="session"
           />
+          <datalist id="session">{sessionOptions}</datalist>
         </label>
         <label>
           Car
