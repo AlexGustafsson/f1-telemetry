@@ -29,7 +29,7 @@ func ActionCollect(ctx *cli.Context) error {
 	}
 	defer socket.Close()
 
-	output, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	output, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Fatal("Failed to open output", zap.Error(err))
 	}
@@ -38,9 +38,9 @@ func ActionCollect(ctx *cli.Context) error {
 	log.Info("Listening for packets", zap.String("address", address))
 	buffer := make([]byte, 4096)
 	for {
-		n, _, err := socket.ReadFrom(buffer)
+		n, peer, err := socket.ReadFrom(buffer)
 		if err != nil {
-			log.Error("Failed to read from socket", zap.Error(err))
+			log.Error("Failed to read from socket", zap.Error(err), zap.String("peer", peer.String()))
 			break
 		}
 
@@ -52,7 +52,6 @@ func ActionCollect(ctx *cli.Context) error {
 		if _, err := output.Write(buffer[:n]); err != nil {
 			log.Error("Failed to write to output", zap.Error(err))
 		}
-		output.Sync()
 	}
 
 	return nil

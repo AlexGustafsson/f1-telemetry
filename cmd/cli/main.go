@@ -74,49 +74,6 @@ func main() {
 			},
 		},
 		{
-			Name:   "collect",
-			Usage:  "collect telemetry",
-			Action: f1cli.ActionCollect,
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:        "address",
-					Usage:       "address to listen on",
-					DefaultText: ":20777",
-				},
-				&cli.StringFlag{
-					Name:      "output",
-					Aliases:   []string{"o"},
-					Usage:     "path to output",
-					Required:  true,
-					TakesFile: true,
-				},
-			},
-		},
-		{
-			Name:   "send",
-			Usage:  "send telemetry from a collected file",
-			Action: f1cli.ActionSend,
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:        "address",
-					Usage:       "address to send to",
-					DefaultText: "127.0.0.1:20777",
-				},
-				&cli.StringFlag{
-					Name:      "input",
-					Aliases:   []string{"i"},
-					Usage:     "path to input",
-					Required:  true,
-					TakesFile: true,
-				},
-				&cli.DurationFlag{
-					Name:        "interval",
-					Usage:       "time between messages",
-					DefaultText: "200ms",
-				},
-			},
-		},
-		{
 			Name:   "query",
 			Usage:  "query collected telemetry",
 			Action: f1cli.ActionQuery,
@@ -179,6 +136,68 @@ func main() {
 							Name:      "output",
 							Aliases:   []string{"o"},
 							Usage:     "path to output",
+							Required:  true,
+							TakesFile: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "debug",
+			Subcommands: []*cli.Command{
+				{
+					Name:   "collect",
+					Usage:  "collect telemetry",
+					Action: f1cli.ActionCollect,
+					Flags: []cli.Flag{
+						&cli.StringFlag{
+							Name:        "address",
+							Usage:       "address to listen on",
+							DefaultText: ":20777",
+						},
+						&cli.StringFlag{
+							Name:      "output",
+							Aliases:   []string{"o"},
+							Usage:     "path to output",
+							Required:  true,
+							TakesFile: true,
+						},
+					},
+				},
+				{
+					Name:   "send",
+					Usage:  "send telemetry from a collected file",
+					Action: f1cli.ActionSend,
+					Flags: []cli.Flag{
+						&cli.StringFlag{
+							Name:        "address",
+							Usage:       "address to send to",
+							DefaultText: "127.0.0.1:20777",
+						},
+						&cli.StringFlag{
+							Name:      "input",
+							Aliases:   []string{"i"},
+							Usage:     "path to input",
+							Required:  true,
+							TakesFile: true,
+						},
+						&cli.DurationFlag{
+							Name:        "interval",
+							Usage:       "time between messages",
+							DefaultText: "200ms",
+						},
+					},
+				},
+				{
+					Name:   "parse",
+					Usage:  "parse telemetry from a collected file",
+					Action: f1cli.ActionParse,
+					Flags: []cli.Flag{
+						&cli.StringFlag{
+							Name:      "input",
+							Aliases:   []string{"i"},
+							Usage:     "path to input",
 							Required:  true,
 							TakesFile: true,
 						},
