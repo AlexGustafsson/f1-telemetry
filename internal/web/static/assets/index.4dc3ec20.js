@@ -26332,7 +26332,7 @@ function QueryPage() {
   const renderedQueries = queries.map(({
     query: query2,
     options
-  }) => /* @__PURE__ */ jsxs("tr", {
+  }, i2) => /* @__PURE__ */ jsxs("tr", {
     className: "cursor-pointer",
     onClick: () => fillQuery(query2, options),
     children: [/* @__PURE__ */ jsx("td", {
@@ -26346,7 +26346,7 @@ function QueryPage() {
     }), /* @__PURE__ */ jsx("td", {
       children: options.maxSamples
     })]
-  }));
+  }, `query-${i2}`));
   react.exports.useEffect(() => {
     fetchAllLabelsWithValues().then(setLabels).catch(console.error);
   }, []);
@@ -26466,9 +26466,9 @@ function QueryPage() {
           children: values.map((value) => /* @__PURE__ */ jsx("code", {
             className: "bg-slate-600 rounded-md p-2 m-2 text-sm",
             children: value
-          }))
+          }, `${label}-${value}`))
         })]
-      })) : null]
+      }, label)) : null]
     }), renderedQueries.length > 0 ? /* @__PURE__ */ jsxs("div", {
       className: "card",
       children: [/* @__PURE__ */ jsx("h2", {
@@ -26622,4 +26622,4 @@ if (root) {
     })
   }));
 }
-//# sourceMappingURL=index.25689c11.js.map
+//# sourceMappingURL=index.4dc3ec20.js.map

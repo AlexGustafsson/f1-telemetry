@@ -31,8 +31,12 @@ export default function (): JSX.Element {
     setQueryMaxSamples(options.maxSamples ? options.maxSamples.toString() : '')
   }
 
-  const renderedQueries = queries.map(({ query, options }) => (
-    <tr className="cursor-pointer" onClick={() => fillQuery(query, options)}>
+  const renderedQueries = queries.map(({ query, options }, i) => (
+    <tr
+      key={`query-${i}`}
+      className="cursor-pointer"
+      onClick={() => fillQuery(query, options)}
+    >
       <td>{query}</td>
       <td>{options.from}</td>
       <td>{options.to}</td>
@@ -148,11 +152,14 @@ export default function (): JSX.Element {
         <h2>Metrics and Labels</h2>
         {labels
           ? Object.entries(labels).map(([label, values]) => (
-              <div>
+              <div key={label}>
                 <h3>{label === '__name__' ? 'Metrics' : `Label '${label}'`}</h3>
                 <div className="flex flex-row flex-wrap">
                   {values.map((value) => (
-                    <code className="bg-slate-600 rounded-md p-2 m-2 text-sm">
+                    <code
+                      key={`${label}-${value}`}
+                      className="bg-slate-600 rounded-md p-2 m-2 text-sm"
+                    >
                       {value}
                     </code>
                   ))}
