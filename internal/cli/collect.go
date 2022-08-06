@@ -2,10 +2,12 @@ package cli
 
 import (
 	"encoding/binary"
+	"fmt"
 	"net"
 	"os"
 
 	"github.com/AlexGustafsson/f1-telemetry/internal/util"
+	"github.com/AlexGustafsson/f1-telemetry/telemetry"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )
@@ -23,6 +25,9 @@ func ActionCollect(ctx *cli.Context) error {
 
 	outputPath := ctx.String("output")
 
+	printHeaders := ctx.Bool("print-headers")
+	collectIncoming := printHeaders
+
 	socket, err := net.ListenPacket("udp", address)
 	if err != nil {
 		log.Fatal("Failed to listen for incoming packets", zap.Error(err))
@@ -35,7 +40,36 @@ func ActionCollect(ctx *cli.Context) error {
 	}
 	defer output.Close()
 
+	var incoming chan []byte
+	if collectIncoming {
+		incoming = make(chan []byte, 100)
+	}
+
+	if collectIncoming {
+		go func() {
+			for {
+				message, ok := <-incoming
+				if !ok {
+					return
+				}
+
+				if printHeaders {
+					packet, err := telemetry.ParsePacket(message)
+					if err != nil {
+						fmt.Println("Unknown packet")
+						continue
+					}
+					fmt.Printf("% 7d@%-20d % 4d:%d\n", packet.ID(), packet.Session(), packet.FormatVersion(), packet.Type())
+				}
+			}
+		}()
+	}
+
 	log.Info("Listening for packets", zap.String("address", address))
+	if printHeaders {
+		fmt.Printf("% 7s@%-20s % 4s:%s\n", "id", "session", "game", "type")
+	}
+
 	buffer := make([]byte, 4096)
 	for {
 		n, peer, err := socket.ReadFrom(buffer)
@@ -51,6 +85,12 @@ func ActionCollect(ctx *cli.Context) error {
 
 		if _, err := output.Write(buffer[:n]); err != nil {
 			log.Error("Failed to write to output", zap.Error(err))
+		}
+
+		if collectIncoming {
+			message := make([]byte, n)
+			copy(message, buffer[:n])
+			incoming <- message
 		}
 	}
 

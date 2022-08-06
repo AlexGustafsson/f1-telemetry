@@ -163,6 +163,11 @@ func main() {
 							Required:  true,
 							TakesFile: true,
 						},
+						&cli.BoolFlag{
+							Name:        "print-headers",
+							Usage:       "print headers of collected messages",
+							DefaultText: "false",
+						},
 					},
 				},
 				{
