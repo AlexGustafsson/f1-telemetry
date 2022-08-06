@@ -7,8 +7,10 @@ import { GetItem, RemoveItem, SetItem } from './wailsjs/go/app/App'
 interface State {
   dismissedHints: string[]
   dismissHint: (hint: string) => void
+  resetHints: () => void
   queryHistory: { query: string; options: QueryOptions }[]
   setQueryHistory: (queries: { query: string; options: QueryOptions }[]) => void
+  clearQueries: () => void
 }
 
 export const useStore = create<State>()(
@@ -19,8 +21,10 @@ export const useStore = create<State>()(
         set((state) => ({
           dismissedHints: Array.from(new Set([...state.dismissedHints, hint])),
         })),
+      resetHints: () => set(() => ({ dismissedHints: [] })),
       queryHistory: [],
       setQueryHistory: (queries) => set(() => ({ queryHistory: queries })),
+      clearQueries: () => set(() => ({ queryHistory: [] })),
     }),
     {
       name: 'store',
