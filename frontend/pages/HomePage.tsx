@@ -5,7 +5,7 @@ import Tip from '../controls/Tip'
 export default function (): JSX.Element {
   return (
     <div>
-      <Tip>
+      <Tip uuid="tip.home-page.intro">
         <p>
           To get started with querying your data, visit the{' '}
           <NavLink to="/query">query page</NavLink>. To create a diagram of

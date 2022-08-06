@@ -7,6 +7,7 @@ import {
   performQuery,
 } from '../api'
 import Tip from '../controls/Tip'
+import { useStore } from '../store'
 
 export default function (): JSX.Element {
   const [queryStartTime, setQueryStartTime] = useState<string>('')
@@ -16,9 +17,10 @@ export default function (): JSX.Element {
   const [query, setQuery] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [result, setResult] = useState<QueryResult | null>(null)
-  const [queries, setQueries] = useState<
-    { query: string; options: QueryOptions }[]
-  >([])
+  const [queries, setQueries] = useStore((state) => [
+    state.queryHistory,
+    state.setQueryHistory,
+  ])
   const [labels, setLabels] = useState<Record<string, string[]> | null>(null)
 
   function fillQuery(query: string, options: QueryOptions) {
@@ -51,7 +53,8 @@ export default function (): JSX.Element {
       interval: queryInterval,
       maxSamples: Number(queryMaxSamples),
     }
-    setQueries((old) => [...old, { query, options }])
+    // Keep the last 10 queries
+    setQueries([{ query, options }, ...queries].slice(0, 10))
     try {
       const result = await performQuery(query, options)
       setResult(result)
@@ -73,7 +76,7 @@ export default function (): JSX.Element {
   return (
     <div>
       <h1>Query</h1>
-      <Tip>
+      <Tip uuid="tip.query-page.intro">
         <p>
           You can query any collected data using{' '}
           <a

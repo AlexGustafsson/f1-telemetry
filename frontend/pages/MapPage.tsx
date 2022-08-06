@@ -149,7 +149,7 @@ export default function (): JSX.Element {
   return (
     <div>
       <h1>Map</h1>
-      <Tip>
+      <Tip uuid="tip.map-page.intro">
         <p>
           This page allows you to produce a map of cars' positions. To produce a
           map, simply specify a session and car. The values can be found in the

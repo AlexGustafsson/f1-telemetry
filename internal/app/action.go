@@ -24,7 +24,7 @@ func ActionApp(ctx *cli.Context) error {
 	if err != nil {
 		log.Fatal("Failed to initialize app", zap.Error(err))
 	}
-	defer app.Destroy()
+	defer app.destroy()
 
 	// Create application with options
 	err = wails.Run(&options.App{
@@ -32,7 +32,7 @@ func ActionApp(ctx *cli.Context) error {
 		Width:     1024,
 		Height:    768,
 		Assets:    fs,
-		OnStartup: app.Start,
+		OnStartup: app.start,
 		Bind: []interface{}{
 			app,
 		},

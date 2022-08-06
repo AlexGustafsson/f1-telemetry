@@ -404,7 +404,7 @@ export default function (): JSX.Element {
   return (
     <div>
       <h1>Graph</h1>
-      <Tip>
+      <Tip uuid="tip.graph-page.intro">
         <p>
           This page allows you to produce a telemetry graph, modeled after a
           real world example. To produce a graph, simply specify a session and
