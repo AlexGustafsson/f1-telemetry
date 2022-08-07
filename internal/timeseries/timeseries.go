@@ -23,7 +23,7 @@ const (
 	LabelSessionType string = "session_type"
 	LabelDriver      string = "driver"
 	LabelPlayerIsAI  string = "is_ai"
-	LabelCarNumber   string = "race_number"
+	LabelCarNumber   string = "car_number"
 	LabelTeam        string = "team"
 )
 

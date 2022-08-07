@@ -104,6 +104,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Session'
+  /sessions/{name}/cars:
+    get:
+      summary: Retrieve all cars in a session
+      responses:
+        '200':
+          description: Retrieved cars
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Car'
 
 components:
   schemas:
@@ -174,3 +186,26 @@ components:
         track:
           type: string
           description: The track the session took place on
+    Car:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: ID of the car in the session
+        team:
+          type: string
+          description: The team the car is driving for
+        driver:
+          type: string
+          description: Name of the car's driver
+        player:
+          type: string
+          description: Name of the car's player
+        isAi:
+          type: boolean
+          description: Whether or not the car is controlled by AI
+        number:
+          type: number
+          description: The car's driver number

@@ -23,6 +23,7 @@ func NewServer(timeSeries *timeseries.TimeSeries) *API {
 	mux.HandleFunc("/api/v1/labels/", api.labelValues)
 	mux.HandleFunc("/api/v1/labels", api.labelNames)
 	mux.HandleFunc("/api/v1/sessions", api.sessions)
+	mux.HandleFunc("/api/v1/sessions/", api.cars)
 
 	return api
 }
