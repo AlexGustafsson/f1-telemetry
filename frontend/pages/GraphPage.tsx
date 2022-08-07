@@ -82,6 +82,23 @@ export default function (): JSX.Element {
   const [sectors, setSectors] = useState<Record<number, number>>({})
   const [laps, setLaps] = useState<Record<number, number>>({})
 
+  const [window, setWindow] = useState<[number, number]>([0, 240])
+
+  const [options, setOptions] = useState<QueryOptions>({
+    from: `${window[0]}s`,
+    to: `${window[1]}s`,
+    interval: '1s',
+    maxSamples: 10000,
+  })
+
+  useEffect(() => {
+    setOptions((options) => ({
+      ...options,
+      from: `${window[0]}s`,
+      to: `${window[1]}s`,
+    }))
+  }, window)
+
   const mouseMove: RVNearestXEventHandler<LineSeriesPoint> = (point) => {
     setCrosshairX(point.x)
   }
@@ -101,13 +118,6 @@ export default function (): JSX.Element {
 
   async function graph() {
     setLoading(true)
-
-    const options: QueryOptions = {
-      from: '1m',
-      to: '4m',
-      interval: '1s',
-      maxSamples: 10000,
-    }
 
     try {
       const sectors = await findSectors(car, session, options)
@@ -159,6 +169,10 @@ export default function (): JSX.Element {
     setShowGraph(true)
     setLoading(false)
   }
+
+  useEffect(() => {
+    graph()
+  }, [options])
 
   function formatTick(x: number): JSX.Element {
     return (
@@ -392,6 +406,11 @@ export default function (): JSX.Element {
           onNearestX={mouseMove}
         />
       </FlexibleXYPlot>
+      <button
+        onClick={() => setWindow((window) => [window[0] + 60, window[1] + 60])}
+      >
+        Next
+      </button>
     </div>
   )
 
