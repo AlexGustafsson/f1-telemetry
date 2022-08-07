@@ -182,6 +182,10 @@ export async function fetchCars(session: string): Promise<Car[]> {
 export function convertSeriesToPoints(
   series: Series[]
 ): Record<number, number> {
+  if (!series || series.length === 0) {
+    return {}
+  }
+
   return series[0].values.reduce(
     (points, [x, y]) => ({ ...points, [x]: Number(y) }),
     {}

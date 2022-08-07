@@ -39,6 +39,10 @@ async function findSectors(
     }
   )
 
+  if (!data || !data.result || data.result.length === 0) {
+    return {}
+  }
+
   return data.result[0].values
     .filter(([_, y]) => y !== '0')
     .reduce<Record<string, number>>(
@@ -47,7 +51,11 @@ async function findSectors(
     )
 }
 
-async function findLaps(car: string, session: string, options?: QueryOptions) {
+async function findLaps(
+  car: string,
+  session: string,
+  options?: QueryOptions
+): Record<string, number> {
   const data = await performQuery(
     `changes(lap{car="${car}",session="${session}"}[1s]) * lap{car="${car}",session="${session}"} != 0`,
     {
@@ -56,6 +64,10 @@ async function findLaps(car: string, session: string, options?: QueryOptions) {
       maxSamples: 10000,
     }
   )
+
+  if (!data || !data.result || data.result.length === 0) {
+    return {}
+  }
 
   return data.result[0].values
     .filter(([_, y]) => y !== '0')
