@@ -13,8 +13,9 @@ import {
 
 import {
   QueryOptions,
+  Session,
   convertSeriesToPoints,
-  fetchLabelValues,
+  fetchSessions,
   performQuery,
 } from '../api'
 import Tip from '../controls/Tip'
@@ -66,7 +67,7 @@ export default function (): JSX.Element {
   const [crosshairX, setCrosshairX] = useState<number>(-1)
   const [loading, setLoading] = useState<boolean>(false)
   const [showGraph, setShowGraph] = useState<boolean>(false)
-  const [sessions, setSessions] = useState<string[]>([])
+  const [sessions, setSessions] = useState<Session[]>([])
 
   const [session, setSession] = useState<string>('')
   const [car, setCar] = useState<string>('')
@@ -91,10 +92,9 @@ export default function (): JSX.Element {
 
   // Fetch available sessions
   useEffect(() => {
-    // Assume every session has some data the first 10 minutes
-    fetchLabelValues('session', '0s', '10m')
-      .then((data) => {
-        setSessions(data.values)
+    fetchSessions()
+      .then((sessions) => {
+        setSessions(sessions)
       })
       .catch(console.error)
   }, [])
@@ -396,8 +396,8 @@ export default function (): JSX.Element {
   )
 
   const sessionOptions = sessions.map((x) => (
-    <option key={x} value={x}>
-      {x}
+    <option key={x.id} value={x.id}>
+      {x.game} - {x.type} - {x.track}
     </option>
   ))
 

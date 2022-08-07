@@ -13,6 +13,13 @@ export interface LabelValuesResult {
   values: string[]
 }
 
+export interface Session {
+  id: string
+  type: string
+  game: string
+  track: string
+}
+
 export type Point = [number, string]
 
 export interface Series {
@@ -128,6 +135,20 @@ export async function fetchAllLabelsWithValues(): Promise<
   }
 
   return result
+}
+
+export async function fetchSessions(): Promise<Session[]> {
+  const response = await fetch(`http://localhost:20777/api/v1/sessions`, {
+    method: 'GET',
+  })
+  const body = await response.json()
+
+  if (response.status !== 200) {
+    const error = body as ErrorResponse
+    throw new Error(error.message)
+  }
+
+  return body as Session[]
 }
 
 export function convertSeriesToPoints(
