@@ -86,6 +86,8 @@ export default function (): JSX.Element {
 
   const [session, setSession] = useState<string>('')
   const [car, setCar] = useState<string>('')
+  const [car2, setCar2] = useState<string>('')
+  const [car2Offset, setCar2Offset] = useState<number>(0)
 
   const [brake, setBrake] = useState<Record<number, number>>({})
   const [drs, setDRS] = useState<Record<number, number>>({})
@@ -93,6 +95,17 @@ export default function (): JSX.Element {
   const [speed, setSpeed] = useState<Record<number, number>>({})
   const [steering, setSteering] = useState<Record<number, number>>({})
   const [throttle, setThrottle] = useState<Record<number, number>>({})
+
+  const [brake2, setBrake2] = useState<Record<number, number> | undefined>()
+  const [drs2, setDRS2] = useState<Record<number, number> | undefined>()
+  const [gears2, setGears2] = useState<Record<number, number> | undefined>()
+  const [speed2, setSpeed2] = useState<Record<number, number> | undefined>()
+  const [steering2, setSteering2] = useState<
+    Record<number, number> | undefined
+  >()
+  const [throttle2, setThrottle2] = useState<
+    Record<number, number> | undefined
+  >()
 
   const [sectors, setSectors] = useState<Record<number, number>>({})
   const [laps, setLaps] = useState<Record<number, number>>({})
@@ -154,11 +167,27 @@ export default function (): JSX.Element {
       setSectors(sectors)
       setLaps(laps)
 
+      const options2 = {
+        ...options,
+        from: `${window[0] + car2Offset}s`,
+        to: `${window[1] + car2Offset}s`,
+      }
+
       const brakeData = await performQuery(
         `brake{car="${car}",session="${session}"}`,
         options
       )
       setBrake(convertSeriesToPoints(brakeData.result))
+
+      if (car2 != '') {
+        const brakeData = await performQuery(
+          `brake{car="${car2}",session="${session}"}`,
+          options2
+        )
+        setBrake2(convertSeriesToPoints(brakeData.result))
+      } else {
+        setBrake2({})
+      }
 
       const drsData = await performQuery(
         `drs{car="${car}",session="${session}"}`,
@@ -166,11 +195,31 @@ export default function (): JSX.Element {
       )
       setDRS(convertSeriesToPoints(drsData.result))
 
+      if (car2 != '') {
+        const drsData = await performQuery(
+          `drs{car="${car2}",session="${session}"}`,
+          options2
+        )
+        setDRS2(convertSeriesToPoints(drsData.result))
+      } else {
+        setDRS2({})
+      }
+
       const gearData = await performQuery(
         `gear{car="${car}",session="${session}"}`,
         options
       )
       setGears(convertSeriesToPoints(gearData.result))
+
+      if (car2 != '') {
+        const gearData = await performQuery(
+          `gear{car="${car2}",session="${session}"}`,
+          options2
+        )
+        setGears2(convertSeriesToPoints(gearData.result))
+      } else {
+        setGears2({})
+      }
 
       const speedData = await performQuery(
         `speed{car="${car}",session="${session}"}`,
@@ -178,17 +227,47 @@ export default function (): JSX.Element {
       )
       setSpeed(convertSeriesToPoints(speedData.result))
 
+      if (car2 != '') {
+        const speedData = await performQuery(
+          `speed{car="${car2}",session="${session}"}`,
+          options2
+        )
+        setSpeed2(convertSeriesToPoints(speedData.result))
+      } else {
+        setSpeed2({})
+      }
+
       const steerData = await performQuery(
         `steer{car="${car}",session="${session}"} * -1`, // it makes sense to have left on the top if you look at the graph, otherswise -1 (left) would be at the bottom
         options
       )
       setSteering(convertSeriesToPoints(steerData.result))
 
+      if (car2 != '') {
+        const steerData = await performQuery(
+          `steer{car="${car2}",session="${session}"} * -1`,
+          options2
+        )
+        setSteering2(convertSeriesToPoints(steerData.result))
+      } else {
+        setSteering2({})
+      }
+
       const throttleData = await performQuery(
         `throttle{car="${car}",session="${session}"}`,
         options
       )
       setThrottle(convertSeriesToPoints(throttleData.result))
+
+      if (car2 != '') {
+        const throttleData = await performQuery(
+          `throttle{car="${car2}",session="${session}"}`,
+          options2
+        )
+        setThrottle2(convertSeriesToPoints(throttleData.result))
+      } else {
+        setThrottle2({})
+      }
     } catch (error) {
       console.error(error)
       setLoading(false)
@@ -243,6 +322,17 @@ export default function (): JSX.Element {
           curve="curveStep"
           onNearestX={mouseMove}
         />
+        {gears2 ? (
+          <Line
+            data={Object.entries(gears2).map(([x, y]) => ({
+              x: Number(x) + car2Offset,
+              y,
+            }))}
+            curve="curveStep"
+            opacity={0.4}
+            color="#ED3C3C"
+          />
+        ) : null}
         <Crosshair
           values={[{ x: crosshairX, y: 0 }]}
           itemsFormat={() => [
@@ -302,6 +392,17 @@ export default function (): JSX.Element {
           curve="curveBasis"
           onNearestX={mouseMove}
         />
+        {steering2 ? (
+          <Line
+            data={Object.entries(steering2).map(([x, y]) => ({
+              x: Number(x) + car2Offset,
+              y,
+            }))}
+            curve="curveBasis"
+            opacity={0.4}
+            color="#ED3C3C"
+          />
+        ) : null}
       </FlexibleXYPlot>
       <FlexibleXYPlot
         height={50}
@@ -339,6 +440,17 @@ export default function (): JSX.Element {
           curve="curveStep"
           onNearestX={mouseMove}
         />
+        {drs2 ? (
+          <Line
+            data={Object.entries(drs2).map(([x, y]) => ({
+              x: Number(x) + car2Offset,
+              y,
+            }))}
+            curve="curveStep"
+            opacity={0.4}
+            color="#ED3C3C"
+          />
+        ) : null}
       </FlexibleXYPlot>
       <FlexibleXYPlot
         height={100}
@@ -370,6 +482,17 @@ export default function (): JSX.Element {
           curve="curveBasis"
           onNearestX={mouseMove}
         />
+        {throttle2 ? (
+          <Line
+            data={Object.entries(throttle2).map(([x, y]) => ({
+              x: Number(x) + car2Offset,
+              y,
+            }))}
+            curve="curveBasis"
+            opacity={0.4}
+            color="#ED3C3C"
+          />
+        ) : null}
       </FlexibleXYPlot>
       <FlexibleXYPlot
         height={200}
@@ -400,6 +523,17 @@ export default function (): JSX.Element {
           curve="curveBasis"
           onNearestX={mouseMove}
         />
+        {speed2 ? (
+          <Line
+            data={Object.entries(speed2).map(([x, y]) => ({
+              x: Number(x) + car2Offset,
+              y: y,
+            }))}
+            curve="curveBasis"
+            opacity={0.4}
+            color="#ED3C3C"
+          />
+        ) : null}
       </FlexibleXYPlot>
       <FlexibleXYPlot
         height={100}
@@ -436,6 +570,17 @@ export default function (): JSX.Element {
           curve="curveBasis"
           onNearestX={mouseMove}
         />
+        {brake2 ? (
+          <Line
+            data={Object.entries(brake2).map(([x, y]) => ({
+              x: Number(x) + car2Offset,
+              y,
+            }))}
+            curve="curveBasis"
+            opacity={0.4}
+            color="#ED3C3C"
+          />
+        ) : null}
       </FlexibleXYPlot>
       <button
         onClick={() => setWindow((window) => [window[0] + 60, window[1] + 60])}
@@ -489,6 +634,23 @@ export default function (): JSX.Element {
             list="car"
           />
           <datalist id="car">{carOptions}</datalist>
+        </label>
+        <label>
+          Car 2
+          <input
+            type="text"
+            value={car2}
+            onChange={(e) => setCar2(e.target.value)}
+            list="car"
+          />
+        </label>
+        <label>
+          Car 2 offset
+          <input
+            type="number"
+            value={car2Offset}
+            onChange={(e) => setCar2Offset(Number(e.target.value))}
+          ></input>
         </label>
         <button disabled={loading} onClick={graph} className="mt-2">
           Graph
