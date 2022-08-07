@@ -20,6 +20,15 @@ export interface Session {
   track: string
 }
 
+export interface Car {
+  id: string
+  team: string
+  driver: string
+  player: string
+  isAi?: boolean
+  number?: number
+}
+
 export type Point = [number, string]
 
 export interface Series {
@@ -149,6 +158,25 @@ export async function fetchSessions(): Promise<Session[]> {
   }
 
   return body as Session[]
+}
+
+export async function fetchCars(session: string): Promise<Car[]> {
+  const response = await fetch(
+    `http://localhost:20777/api/v1/sessions/${encodeURIComponent(
+      session
+    )}/cars`,
+    {
+      method: 'GET',
+    }
+  )
+  const body = await response.json()
+
+  if (response.status !== 200) {
+    const error = body as ErrorResponse
+    throw new Error(error.message)
+  }
+
+  return body as Car[]
 }
 
 export function convertSeriesToPoints(

@@ -12,9 +12,11 @@ import {
 } from 'react-vis'
 
 import {
+  Car,
   QueryOptions,
   Session,
   convertSeriesToPoints,
+  fetchCars,
   fetchSessions,
   performQuery,
 } from '../api'
@@ -68,6 +70,7 @@ export default function (): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [showGraph, setShowGraph] = useState<boolean>(false)
   const [sessions, setSessions] = useState<Session[]>([])
+  const [cars, setCars] = useState<Car[]>([])
 
   const [session, setSession] = useState<string>('')
   const [car, setCar] = useState<string>('')
@@ -115,6 +118,20 @@ export default function (): JSX.Element {
       })
       .catch(console.error)
   }, [])
+
+  // Fetch available cars
+  useEffect(() => {
+    if (session == '') {
+      setCars([])
+      return
+    }
+
+    fetchCars(session)
+      .then((cars) => {
+        setCars(cars)
+      })
+      .catch(console.error)
+  }, [session])
 
   async function graph() {
     setLoading(true)
@@ -171,7 +188,9 @@ export default function (): JSX.Element {
   }
 
   useEffect(() => {
-    graph()
+    if (session !== '' && car !== '') {
+      graph()
+    }
   }, [options])
 
   function formatTick(x: number): JSX.Element {
@@ -420,6 +439,13 @@ export default function (): JSX.Element {
     </option>
   ))
 
+  const carOptions = cars.map((x) => (
+    <option key={x.id} value={x.id}>
+      {x.isAi ? 'AI' : 'Player'} '{x.isAi ? x.driver : x.player}'
+      {x.isAi === false ? ` (as ${x.driver}) ` : ''} - car {x.number}
+    </option>
+  ))
+
   return (
     <div>
       <h1>Graph</h1>
@@ -448,7 +474,9 @@ export default function (): JSX.Element {
             type="text"
             value={car}
             onChange={(e) => setCar(e.target.value)}
+            list="car"
           />
+          <datalist id="car">{carOptions}</datalist>
         </label>
         <button disabled={loading} onClick={graph} className="mt-2">
           Graph
