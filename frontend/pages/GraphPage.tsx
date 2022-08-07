@@ -158,6 +158,10 @@ export default function (): JSX.Element {
       .catch(console.error)
   }, [session])
 
+  // TODO: How the second car is a bit wonky. When the offset is changed, there seems to be a misalignment in data.
+  // The data is cut off and it's hard to know exactly how to align the series. Is it possible to identify when the sector is changed
+  // and automatically align? Or identify what lap they're on? We want it to work for qualifying as well...
+  // Perhaps we even want it to work for laps of the same car in the same session.
   async function graph() {
     setLoading(true)
 
