@@ -92,6 +92,18 @@ paths:
                   values:
                     items:
                       type: string
+  /sessions:
+    get:
+      summary: Retrieve all sessions
+      responses:
+        '200':
+          description: Retrieved sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
 
 components:
   schemas:
@@ -141,3 +153,24 @@ components:
           description: Session time the value was recorded
         - type: string
           description: Value
+    Session:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: ID of the session
+        type:
+          type: string
+          description: Type of session
+          enum:
+            - OneShotQualifying
+            - Race
+            - TimeTrial
+        game:
+          type: string
+          description: Game version
+        track:
+          type: string
+          description: The track the session took place on
